@@ -1,0 +1,5 @@
+#!/python
+
+import einit
+
+
