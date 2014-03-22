@@ -1,9 +1,9 @@
-#import os
-from flask import Flask
+import flask
 
-app = Flask(__name__)
+app = flask.Flask(__name__)
 
+#register routes
 @app.route('/')
-def hello():
-    return 'Hello World!'
-
+@app.route('/index')
+def index():
+  return "Einit"
