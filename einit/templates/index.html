@@ -1,14 +1,16 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <title>Encounter Initiative</title>
-  <link href="static/css/bootstrap.min.css" rel="stylesheet">
-  <script data-main="static/js/main.js" src="static/vendor/require.js"></script>
-</head>
-<body>
+{% extends "base.html" %}
+{% block content %}
+{% import 'macros.html' as util %}
 
-  <div class="loading"><h1>Loading</h1></div>
 
-</body>
-</html>
+<div class="center jumbotron">
+  <h1>Welcome to the Encounter Manager</h1>
+
+  <h2>
+    Manage your 4e encounters
+  </h2>
+
+  {{util.build_link("Sign up now", "#", "btn btn-primary btn-lg")}}
+</div>
+
+{% endblock %}
