@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+{% import 'macros.html' as util %}
+
+<div class="container">
+  <div class="row">
+    <div class="span6 offset3">
+      <form method="post" action="/signup">
+        {{form.hidden_tag()}}
+        {{util.render_field(form.name)}}
+        {{util.render_field(form.email)}}
+        {{util.render_field(form.password)}}
+        {{util.render_field(form.password_confirmation)}}
+        <dt/>
+        <dd>
+          <input type="submit" class="btn btn-primary" value="Sign up!"/>
+        </dd>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

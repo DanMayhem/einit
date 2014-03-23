@@ -11,9 +11,10 @@ import flaskext.bcrypt
 
 app = flask.Flask(__name__)
 
-#set debug mode as appropriate
+#set debug mode and other config options as appropriate
 if os.environ.has_key("DEBUG_EINIT"):
   app.debug=True
+app.config['CSRF_ENABLED'] = True
 
 #load databases
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL',"sqllite://")
@@ -32,10 +33,17 @@ sslify = flask_sslify.SSLify(app)
 
 #import models, views and helpers
 import einit.models
+import einit.views
 
-#register routes
+#register static routes
 @app.route('/')
 @app.route('/index')
 @app.route('/home')
 def index():
   return flask.render_template("index.html")
+
+#user routes
+@app.route('/signup', methods=['GET'])
+def signup():
+
+  return flask.render_template("signup.html",form=einit.views.SignUpForm())
