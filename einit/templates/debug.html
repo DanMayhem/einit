@@ -1,8 +1,8 @@
-{% if debug  %}
+{% if config['DEBUG'] == True  %}
 
 <div class="debug-dump">
-
-</div
+{{ request.values }}
+</div>
 
 
 {% endif %}
