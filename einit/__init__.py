@@ -1,4 +1,5 @@
 import os
+
 import flask
 import flask.ext.sqlalchemy
 import flask_sslify
@@ -18,6 +19,9 @@ db = flask.ext.sqlalchemy.SQLAlchemy(app)
 
 #require SSL unless in debug mode
 sslify = flask_sslify.SSLify(app)
+
+#import models, views and helpers
+import einit.models
 
 #register routes
 @app.route('/')
