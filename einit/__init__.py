@@ -52,10 +52,14 @@ def signup_form():
 def create_user():
   form = einit.views.SignUpForm()
   if not form.validate_on_submit():
+    #check to see if usename exists:
+    if db.session.query(einit.models.User).filter(einit.User.name == form.name.data).all >0:
+      pass
     u = einit.models.User(form.name.data, form.email.data, form.password.data)
     db.session.add(u)
-    db.commit()
-    flask.redirect(flask.url_for(signup_form), code=302) #force method to get
+    db.session.commit()
+    return flask.redirect(flask.url_for("index"), code=302) #force method to get
+  return flask.redirect(flask.url_for("signup_form"))
 
 
 

@@ -14,7 +14,7 @@ class User(my_db.Model):
 
   def __init__(self, name, email, password):
     self.name = name
-    self.email = email
+    self.email = email.lower()
     self.password_digest = einit.bcrypt.generate_password_hash(password)
     sha = hashlib.sha1()
     sha.update(Crypto.Random.get_random_bytes(32))
