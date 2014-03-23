@@ -2,6 +2,7 @@ import os
 import flask
 import flask.ext.sqlalchemy
 import flask_sslify
+import flaskext.bcrypt
 
 app = flask.Flask(__name__)
 
