@@ -36,7 +36,7 @@ def index():
   return flask.render_template("index.html")
 
 #user routes
-@app.route('/signup_form', methods=['GET'])
+@app.route('/signup_form', methods=['GET','POST'])
 def signup_form():
   return flask.render_template("signup.html",form=einit.views.SignUpForm())
 
@@ -46,15 +46,18 @@ def create_user():
   if form.validate_on_submit():
     #check to see if usename exists:
     if db.session.query(einit.models.User).filter(einit.User.name == form.name.data).all >0:
-      pass
+      flask.flash('Username already exists','danger')
+      return flask.redirect(flask.url_for("signup_form"))
+
     u = einit.models.User(form.name.data, form.email.data, form.password.data)
     db.session.add(u)
     db.session.commit()
     return flask.redirect(flask.url_for("index"), code=302) #force method to get
   #validation failed, flash errors
   for k in form.errors:
-    flask.flash(form.errors[k],'danger')
-  return flask.redirect(flask.url_for("signup_form"), code=302)
+      for msg in form.errors[k]:
+        flask.flash(msg,'danger')
+  return flask.redirect(flask.url_for("signup_form"))
 
 
 
