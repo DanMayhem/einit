@@ -13,6 +13,10 @@
       {% include "navbar.html" ignore missing %}
     {% endblock %}
     <div class="container">
+      {% block flasher %}
+        {%include "flasher.html" ignore missing %}
+      {% endblock %}
+
       {% block content %}
       {% endblock %}
 

@@ -43,7 +43,7 @@ def signup_form():
 @app.route('/signup', methods=['POST'])
 def create_user():
   form = einit.views.SignUpForm()
-  if not form.validate_on_submit():
+  if form.validate_on_submit():
     #check to see if usename exists:
     if db.session.query(einit.models.User).filter(einit.User.name == form.name.data).all >0:
       pass
@@ -51,7 +51,10 @@ def create_user():
     db.session.add(u)
     db.session.commit()
     return flask.redirect(flask.url_for("index"), code=302) #force method to get
-  return flask.redirect(flask.url_for("signup_form"))
+  #validation failed, flash errors
+  for k in form.errors:
+    flask.flash(form.errors[k],'danger')
+  return flask.redirect(flask.url_for("signup_form"), code=302)
 
 
 

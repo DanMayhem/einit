@@ -2,21 +2,20 @@
 {% block content %}
 {% import 'macros.html' as util %}
 
-<div class="container">
-  <div class="row">
-    <div class="col-xs-4 col-xs-offset-4 well">
-      <h1>Sign Up</h1>
-      <form method="post" action="/signup">
-        {{form.hidden_tag()}}
-        {{util.form_field(form.name)}}
-        {{util.form_field(form.email)}}
-        {{util.form_field(form.password)}}
-        {{util.form_field(form.password_confirmation)}}
-        <dt/>
-        <dd>
-          <input type="submit" class="btn btn-primary" value="Sign up!"/>
-        </dd>
-    </div>
+<div class="row">
+  <div class="col-md-4 col-md-offset-4 well">
+
+    <h1>Sign Up</h1>
+    <form method="post" action="/signup">
+      {{form.hidden_tag()}}
+      {{util.form_field(form.name)}}
+      {{util.form_field(form.email)}}
+      {{util.form_field(form.password)}}
+      {{util.form_field(form.password_confirmation)}}
+      <dt/>
+      <dd>
+        <input type="submit" class="btn btn-primary" value="Sign up!"/>
+      </dd>
   </div>
 </div>
 
