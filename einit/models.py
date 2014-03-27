@@ -2,9 +2,11 @@ import einit
 import Crypto.Random
 import hashlib
 
+import flask.ext.login
+
 my_db = einit.db
 
-class User(my_db.Model):
+class UserModel(my_db.Model):
   __tablename__ = 'users'
   id = my_db.Column(my_db.Integer, primary_key = True)
   name = my_db.Column(my_db.String(64), index = True, unique = True)
@@ -22,4 +24,24 @@ class User(my_db.Model):
     self.session_digest = hashlib.sha1(Crypto.Random.get_random_bytes(32)).hexdigest()
 
   def __repr__(self):
-    return '<User %r>' % (self.name)
+    return '<UserModel %r>' % (self.name)
+
+class User(flask.ext.login.UserMixin):
+  def __init__(self, name, email, password):
+    self.u = UserModel(name, email, password)
+
+  def __repr__(self):
+      return '<User %r>' %self.u.name
+
+  def save(self):
+    my_db.session.add(self.u)
+    my_db.session.commit()
+
+  def does_username_exist(name):
+    return len(my_db.session.query(UserMode).filter(UserModel.name == name).all())>0
+    
+  def does_email_exist(email):
+    return len(my_db.session.query(UserMode).filter(UserModel.email == email).all())>0
+    
+
+
