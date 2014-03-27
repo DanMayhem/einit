@@ -5,6 +5,7 @@ import hashlib
 my_db = einit.db
 
 class User(my_db.Model):
+  __tablename__ = 'users'
   id = my_db.Column(my_db.Integer, primary_key = True)
   name = my_db.Column(my_db.String(64), index = True, unique = True)
   email = my_db.Column(my_db.String(120), index = True, unique = True)
@@ -21,4 +22,4 @@ class User(my_db.Model):
     self.session_digest = hashlib.sha1(Crypto.Random.get_random_bytes(32)).hexdigest()
 
   def __repr__(self):
-    return '<User %r>' % (self.nickname)
+    return '<User %r>' % (self.name)

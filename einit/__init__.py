@@ -40,26 +40,23 @@ def index():
 #user routes
 @app.route('/signup', methods=['GET','POST'])
 def signup():
-  return flask.render_template("signup.html",form=einit.views.SignUpForm())
-
-@app.route('/signup', methods=['POST'])
-def create_user():
   form = einit.views.SignUpForm()
   if form.validate_on_submit():
     #check to see if usename exists:
-    if db.session.query(einit.models.User).filter(einit.User.name == form.name.data).all >0:
+    if len(db.session.query(einit.models.User).filter(einit.models.User.name == form.name.data).all()) > 0:
       flask.flash('Username already exists','danger')
-      return flask.redirect(flask.url_for("signup_form"))
+      return flask.render_template('signup.html',form=form)
+
+    if len(db.session.query(einit.models.User).filter(einit.models.User.email == form.email.data.lower()).all()) > 0:
+      flask.flash('Email already taken','danger')
+      return flask.render_template('signup.html',form=form)
 
     u = einit.models.User(form.name.data, form.email.data, form.password.data)
     db.session.add(u)
     db.session.commit()
     return flask.redirect(flask.url_for("index"), code=302) #force method to get
   #validation failed, flash errors
-  for k in form.errors:
-      for msg in form.errors[k]:
-        flask.flash(msg,'danger')
-  return flask.redirect(flask.url_for("signup_form"))
+  return flask.render_template('signup.html',form=form)
 
 
 
