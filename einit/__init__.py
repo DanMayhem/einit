@@ -6,6 +6,10 @@ import flask_sslify
 import flaskext.bcrypt
 import flask_bootstrap
 
+import Crypto.Random
+import base64
+import hashlib
+
 app = flask.Flask(__name__)
 
 #set debug mode and other config options as appropriate
@@ -24,7 +28,7 @@ app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
 #other flask extensions
 sslify = flask_sslify.SSLify(app) #requires SSL
 bcrypt = flaskext.bcrypt.Bcrypt(app) #password digests
-flask_bootstrap.Bootstrap(app) #make bootstrap templates and helpers available.
+bootstrap = flask_bootstrap.Bootstrap(app) #make bootstrap templates and helpers available.
 
 #import models, views and helpers
 import einit.models
@@ -54,13 +58,9 @@ def signup():
     u = einit.models.User(form.name.data, form.email.data, form.password.data)
     db.session.add(u)
     db.session.commit()
+    #log in user - give them a session token and flash a welcome
+    flask.flash('Account Created - Welcome!','success')
+
     return flask.redirect(flask.url_for("index"), code=302) #force method to get
   #validation failed, flash errors
   return flask.render_template('signup.html',form=form)
-
-
-
-
-
-
-
