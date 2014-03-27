@@ -50,11 +50,11 @@ def signup():
   form = einit.views.SignUpForm()
   if form.validate_on_submit():
     #check to see if usename exists:
-    if User.does_username_exist(form.name.data):
+    if einit.models.User.does_username_exist(form.name.data):
       flask.flash('Username already exists','danger')
       return flask.render_template('signup.html',form=form)
 
-    if User.does_email_exsist(form.email.data):
+    if einit.models.User.does_email_exist(form.email.data):
       flask.flash('Email already taken','danger')
       return flask.render_template('signup.html',form=form)
 
@@ -62,7 +62,7 @@ def signup():
     u.save()
     #log in user - give them a session token and flash a welcome
     flask.flash('Account Created - Welcome!','success')
-    flask.ext.login.login_user(u)
+    flask.ext.login.login_user(u, remember=True)
 
     return flask.redirect(flask.url_for("index"), code=302) #force method to get
   #validation failed, flash errors

@@ -30,6 +30,9 @@ class User(flask.ext.login.UserMixin):
   def __init__(self, name, email, password):
     self.u = UserModel(name, email, password)
 
+  def get_id(self):
+      self.u.id
+
   def __repr__(self):
       return '<User %r>' %self.u.name
 
@@ -37,11 +40,36 @@ class User(flask.ext.login.UserMixin):
     my_db.session.add(self.u)
     my_db.session.commit()
 
+  @staticmethod
   def does_username_exist(name):
-    return len(my_db.session.query(UserMode).filter(UserModel.name == name).all())>0
+    return len(my_db.session.query(UserModel).filter(UserModel.name == name).all())>0
     
+  @staticmethod
   def does_email_exist(email):
-    return len(my_db.session.query(UserMode).filter(UserModel.email == email).all())>0
-    
+    return len(my_db.session.query(UserModel).filter(UserModel.email == email).all())>0
+  
+  @staticmethod
+  def load_user_by_id(id):
+    u = User()
+    u.u = my_db.session.query(UserModel).filter(UserModel.id == id).one()
+    return u
 
+class AnonymousUser(User):
+  def __init__(self):
+    self.u = None
+
+  def __repr__(self):
+    return "AnonymousUser"
+
+  def save(self):
+    pass #maybe raise an exception?
+
+  def is_active(self):
+    return False
+
+  def is_anonymous(self):
+    return True
+
+  def get_id(self):
+    return None
 

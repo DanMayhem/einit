@@ -1,15 +1,17 @@
 #!python
-import einit
-import einit.models
 import sqlalchemy
 
-#set login manager options:
-einit.login_manager
+import einit
+import einit.models
 
-@flask.ext.login.user_loader
+#set login manager options:
+einit.login_manager.login_message_category='warning'
+einit.login_manager.anonymous_user=einit.models.AnonymousUser
+
+@einit.login_manager.user_loader
 def load_user(userid):
   try:
-    u = einit.db.session.query(einit.Models.User).filter(einit.Models.User.id == userid).one()
+    u = einit.models.load_user_by_id(userid)
     return u
   except sqlalchemy.orm.exc.NoResultFound:
     return None
