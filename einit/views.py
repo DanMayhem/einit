@@ -15,3 +15,4 @@ class SignUpForm(w.Form):
   ])
   password_confirmation = f.PasswordField('Confirm Password')
 
+  signup = f.SubmitField('Sign up')

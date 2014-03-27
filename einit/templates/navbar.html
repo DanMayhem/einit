@@ -1,13 +1,15 @@
-{% import 'macros.html' as util %}
-<header class="navbar navbar-fixed-top navbar-inverse">
-  <div class="navbar-inner">
-    <div class="container">
-      <a href="/" class="logo">Encounter Manager</a>
-      <nav>
-        <p class="navbar-text navbar-right">
-          {{util.build_link("Sign In", "#", "navbar-link")}}
-        </p>
-      </nav>
+{% import 'util.html' as util %}
+<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      {{util.build_link('Encounter Manager',url_for('index'),'navbar-brand')}}
     </div>
+    <ul class="nav navbar-nav">
+    </ul>
+    <ul class="nav navbar-nav navbar-right">
+      <li>{{util.build_link('Sign up',url_for('signup'))}}</li>
+    </ul>
   </div>
-</header>
+</nav>
+
+

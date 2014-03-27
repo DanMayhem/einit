@@ -1,8 +1,10 @@
 {% if config['DEBUG'] == True  %}
 
-<div class="well debug-dump">
-{{ request.values }}
-</div>
-
+<pre>
+{% for k in request.values.keys() %}
+  <kbd>{{k}}</kbd> {{request.values[k]}} <br/>
+{% endfor %}
+</pre>
 
 {% endif %}
+<!-- in debug-->

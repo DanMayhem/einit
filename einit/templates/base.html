@@ -1,33 +1,32 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Encounter Manager</title>
-  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+{%extends "bootstrap/base.html" %}
+
+{% block title %}Encounter Manager{% endblock %}
+
+{% block styles %}
+  {{super()}}
   <link rel="stylesheet" href="/static/css/custom.css">
-  <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
-  <script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
-  <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
-</head>
-  <body>
-    {% block navbar %}
-      {% include "navbar.html" ignore missing %}
-    {% endblock %}
-    <div class="container">
-      {% block flasher %}
-        {%include "flasher.html" ignore missing %}
-      {% endblock %}
+{% endblock %}
 
-      {% block content %}
-      {% endblock %}
+{% block navbar %}
+  {% include "navbar.html" %}
+{% endblock %}
 
-      {% block footer %}
-        {% include "footer.html" ignore missing %}
-      {% endblock %}
+{% block content %}  
+<div class="container">
 
-      {% block debug %}
-        {% include "debug.html" ignore missing %}
-      {% endblock %}
+  {% block flasher %}
+    {%include "flasher.html" ignore missing %}
+  {% endblock %}
 
-    </div>
-  </body>
-</html>
+  {% block main_content %}
+  {% endblock %}
+
+  {% block footer %}
+    {% include "footer.html" ignore missing %}
+  {% endblock %}
+
+  {% block debug %}
+    {% include "debug.html" %}
+  {% endblock %}
+
+{% endblock %}

@@ -1,21 +1,22 @@
 {% extends "base.html" %}
-{% block content %}
-{% import 'macros.html' as util %}
+{% block main_content %}
+{% import 'util.html' as util %}
+{% import 'bootstrap/wtf.html' as wtf %}
 
 <div class="row">
   <div class="col-md-4 col-md-offset-4 well">
 
-    <h1>Sign Up</h1>
-    <form method="post" action="/signup">
-      {{form.hidden_tag()}}
-      {{util.form_field(form.name)}}
-      {{util.form_field(form.email)}}
-      {{util.form_field(form.password)}}
-      {{util.form_field(form.password_confirmation)}}
-      <dt/>
-      <dd>
-        <input type="submit" class="btn btn-primary" value="Sign up!"/>
-      </dd>
+    <h1>Sign up now</h1>
+    {{
+      wtf.quick_form(
+        form,
+        action=url_for('signup'),
+        button_map = {
+          'signup': 'primary'
+        }
+      )
+    }}
+
   </div>
 </div>
 

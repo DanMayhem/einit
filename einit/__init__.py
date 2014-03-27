@@ -4,6 +4,7 @@ import flask
 import flask.ext.sqlalchemy
 import flask_sslify
 import flaskext.bcrypt
+import flask_bootstrap
 
 app = flask.Flask(__name__)
 
@@ -23,6 +24,7 @@ app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
 #other flask extensions
 sslify = flask_sslify.SSLify(app) #requires SSL
 bcrypt = flaskext.bcrypt.Bcrypt(app) #password digests
+flask_bootstrap.Bootstrap(app) #make bootstrap templates and helpers available.
 
 #import models, views and helpers
 import einit.models
@@ -36,8 +38,8 @@ def index():
   return flask.render_template("index.html")
 
 #user routes
-@app.route('/signup_form', methods=['GET','POST'])
-def signup_form():
+@app.route('/signup', methods=['GET','POST'])
+def signup():
   return flask.render_template("signup.html",form=einit.views.SignUpForm())
 
 @app.route('/signup', methods=['POST'])
