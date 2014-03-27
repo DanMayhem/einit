@@ -2,9 +2,10 @@ import os
 
 import flask
 import flask.ext.sqlalchemy
+import flask.ext.login
+import flask_bootstrap
 import flask_sslify
 import flaskext.bcrypt
-import flask_bootstrap
 
 import Crypto.Random
 import base64
@@ -29,10 +30,12 @@ app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
 sslify = flask_sslify.SSLify(app) #requires SSL
 bcrypt = flaskext.bcrypt.Bcrypt(app) #password digests
 bootstrap = flask_bootstrap.Bootstrap(app) #make bootstrap templates and helpers available.
+login_manager = flask.ext.login.LoginManager(app) #login manager
 
 #import models, views and helpers
 import einit.models
 import einit.views
+import einit.user_support
 
 #register static routes
 @app.route('/')
@@ -47,19 +50,19 @@ def signup():
   form = einit.views.SignUpForm()
   if form.validate_on_submit():
     #check to see if usename exists:
-    if len(db.session.query(einit.models.User).filter(einit.models.User.name == form.name.data).all()) > 0:
+    if User.does_username_exist(form.name.data):
       flask.flash('Username already exists','danger')
       return flask.render_template('signup.html',form=form)
 
-    if len(db.session.query(einit.models.User).filter(einit.models.User.email == form.email.data.lower()).all()) > 0:
+    if User.does_email_exsist(form.email.data):
       flask.flash('Email already taken','danger')
       return flask.render_template('signup.html',form=form)
 
     u = einit.models.User(form.name.data, form.email.data, form.password.data)
-    db.session.add(u)
-    db.session.commit()
+    u.save()
     #log in user - give them a session token and flash a welcome
     flask.flash('Account Created - Welcome!','success')
+    flask.ext.login.login_user(u)
 
     return flask.redirect(flask.url_for("index"), code=302) #force method to get
   #validation failed, flash errors

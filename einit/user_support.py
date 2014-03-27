@@ -3,6 +3,9 @@ import einit
 import einit.models
 import sqlalchemy
 
+#set login manager options:
+einit.login_manager
+
 @flask.ext.login.user_loader
 def load_user(userid):
   try:
@@ -10,5 +13,5 @@ def load_user(userid):
     return u
   except sqlalchemy.orm.exc.NoResultFound:
     return None
-  except sqlalchemt.orm.exc.MultipleResultsFound:
+  except sqlalchemy.orm.exc.MultipleResultsFound:
     return None
