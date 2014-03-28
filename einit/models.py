@@ -129,3 +129,7 @@ class AnonymousUser(User):
 
 class HeroModel(my_db.Model):
   __tablename__='heroes'
+  id = my_db.Column(my_db.Integer, primary_key = True)
+  hero_name = my_db.Column(my_db.String(64))
+  player_name = my_db.Column(my_db.String(66))
+  level = my_db.Column(my_db.Integer)
