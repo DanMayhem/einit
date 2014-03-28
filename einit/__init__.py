@@ -40,8 +40,9 @@ import einit.user_support
 #register static routes
 @app.route('/')
 @app.route('/index')
-@app.route('/home')
 def index():
+  if flask.ext.login.current_user.is_authenticated():
+    return flask.redirect(flask.url_for('home'))
   return flask.render_template("index.html")
 
 #user routes
@@ -93,3 +94,8 @@ def signin():
 def signout():
     flask.ext.login.logout_user()
     return flask.redirect(flask.url_for("index"))
+
+@app.route("/home")
+@flask.ext.login.login_required
+def home():
+  return flask.render_template("heroes.html")

@@ -126,3 +126,6 @@ class AnonymousUser(User):
 
   def get_name(self):
     return 'Anonymous'
+
+class HeroModel(my_db.Model):
+  __tablename__='heroes'
