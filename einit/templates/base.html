@@ -4,7 +4,8 @@
 
 {% block styles %}
   {{super()}}
-  <link rel="stylesheet" href="{{url_for('static',filename='css/custom.css')}}">
+  <link rel="stylesheet" href="{{url_for('static',filename='css/custom.css')}}"/>
+  <link rel="icon" href="{{url_for('static',filename='images/d20.png')}}"/>
 {% endblock %}
 
 {% block navbar %}

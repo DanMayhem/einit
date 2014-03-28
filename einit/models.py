@@ -1,6 +1,7 @@
 import einit
 import Crypto.Random
 import hashlib
+import sqlalchemy
 
 import flask.ext.login
 
@@ -27,8 +28,8 @@ class UserModel(my_db.Model):
     return '<UserModel %r>' % (self.name)
 
 class User(flask.ext.login.UserMixin):
-  def __init__(self, name, email, password):
-    self.u = UserModel(name, email, password)
+  def __init__(self):
+    self.u = None
 
   def get_id(self):
       self.u.id
@@ -50,8 +51,21 @@ class User(flask.ext.login.UserMixin):
   
   @staticmethod
   def load_user_by_id(id):
+    if id == 'None':
+      return None
+    try:
+      u = User()
+      u.u = my_db.session.query(UserModel).filter(UserModel.id == id).one()
+      return u
+    except sqlalchemy.orm.exc.NoResultFound:
+      return None
+    except sqlalchemy.orm.exc.MultipleResultsFound:
+      return None
+
+  @staticmethod
+  def create_user(name, email, password):
     u = User()
-    u.u = my_db.session.query(UserModel).filter(UserModel.id == id).one()
+    u.u = UserModel(name, email, password)
     return u
 
 class AnonymousUser(User):

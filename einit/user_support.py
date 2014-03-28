@@ -1,6 +1,4 @@
 #!python
-import sqlalchemy
-
 import einit
 import einit.models
 
@@ -10,10 +8,4 @@ einit.login_manager.anonymous_user=einit.models.AnonymousUser
 
 @einit.login_manager.user_loader
 def load_user(userid):
-  try:
-    u = einit.models.load_user_by_id(userid)
-    return u
-  except sqlalchemy.orm.exc.NoResultFound:
-    return None
-  except sqlalchemy.orm.exc.MultipleResultsFound:
-    return None
+  return einit.models.User.load_user_by_id(userid)
