@@ -2,3 +2,10 @@
 <a href="{{url}}" class="{{class}}">{{text}}</a>
 {%- endmacro %}
 
+{% macro gravatar_small(c) -%}
+  {% if config['DEBUG'] == True  %}
+    <img src="https://www.gravatar.com/avatar/{{c.get_gravatar_hash()}}?s=40&d=retro" alt="avatar" height="40" width="40" class="img-rounded" />
+  {% else %}  
+    <img src="https://www.gravatar.com/avatar/{{c.get_gravatar_hash()}}?s=40&d={{url_for('static',filename='images/d20.png',_external=True)}}" alt="avatar" height="40" width="40" class="img-rounded" />
+  {% endif %}
+{%- endmacro %}

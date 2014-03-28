@@ -8,4 +8,4 @@ einit.login_manager.anonymous_user=einit.models.AnonymousUser
 
 @einit.login_manager.user_loader
 def load_user(userid):
-  return einit.models.User.load_user_by_id(userid)
+  return einit.models.User.get_user_by_id(userid)

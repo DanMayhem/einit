@@ -32,25 +32,56 @@ class User(flask.ext.login.UserMixin):
     self.u = None
 
   def get_id(self):
-      self.u.id
+    return self.u.id
 
   def __repr__(self):
-      return '<User %r>' %self.u.name
+    return '<User %r>' %self.u.name
 
   def save(self):
     my_db.session.add(self.u)
     my_db.session.commit()
 
+  def get_gravatar_hash(self):
+    return hashlib.md5(self.u.email.lower()).hexdigest()
+
+  def get_name(self):
+    return self.u.name
+
+  def check_password(self, password):
+    return einit.bcrypt.check_password_hash(self.u.password_digest,password)
+
+  @staticmethod
+  def get_user_by_name(name):
+    try:
+      u = User()
+      u.u = my_db.session.query(UserModel).filter(UserModel.name == name).one()
+      return u
+    except sqlalchemy.orm.exc.NoResultFound:
+      return None
+    except sqlalchemy.orm.exc.MultipleResultsFound:
+      return None
+
+  @staticmethod
+  def get_user_by_email(email):
+    try:
+      u = User()
+      u.u = my_db.session.query(UserModel).filter(UserModel.email == email).one()
+      return u
+    except sqlalchemy.orm.exc.NoResultFound:
+      return None
+    except sqlalchemy.orm.exc.MultipleResultsFound:
+      return None
+
   @staticmethod
   def does_username_exist(name):
-    return len(my_db.session.query(UserModel).filter(UserModel.name == name).all())>0
+    return User.get_user_by_name(name) is not None
     
   @staticmethod
   def does_email_exist(email):
-    return len(my_db.session.query(UserModel).filter(UserModel.email == email).all())>0
+    return User.get_user_by_email(email) is not None
   
   @staticmethod
-  def load_user_by_id(id):
+  def get_user_by_id(id):
     if id == 'None':
       return None
     try:
@@ -78,7 +109,13 @@ class AnonymousUser(User):
   def save(self):
     pass #maybe raise an exception?
 
+  def get_gravatar_hash(self):
+    return 'd41d8cd98f00b204e9800998ecf8427e' #this the md5 of an empy string
+
   def is_active(self):
+    return False
+
+  def is_authenticated(self):
     return False
 
   def is_anonymous(self):
@@ -87,3 +124,5 @@ class AnonymousUser(User):
   def get_id(self):
     return None
 
+  def get_name(self):
+    return 'Anonymous'

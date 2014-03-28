@@ -16,3 +16,13 @@ class SignUpForm(w.Form):
   password_confirmation = f.PasswordField('Confirm Password')
 
   signup = f.SubmitField('Sign up')
+
+class SignInForm(w.Form):
+  name_or_email = f.StringField('Name or Email', validators=[
+    v.InputRequired('Enter name or email address')
+  ])
+  password = f.PasswordField('Password', validators=[
+    v.InputRequired('Password Required')
+  ])
+
+  login = f.SubmitField('Sign In')

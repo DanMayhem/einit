@@ -45,10 +45,6 @@ def index():
   return flask.render_template("index.html")
 
 #user routes
-@app.route('/favicon.ico')
-def favicon():
-    return flask.redirect(flask.url_for('static',filename='images/d20.png'))
-
 @app.route('/signup', methods=['GET','POST'])
 def signup():
   form = einit.views.SignUpForm()
@@ -62,7 +58,7 @@ def signup():
       flask.flash('Email already taken','danger')
       return flask.render_template('signup.html',form=form)
 
-    u = einit.models.User(form.name.data, form.email.data, form.password.data)
+    u = einit.models.User.create_user(form.name.data, form.email.data, form.password.data)
     u.save()
     #log in user - give them a session token and flash a welcome
     flask.flash('Account Created - Welcome!','success')
@@ -71,3 +67,29 @@ def signup():
     return flask.redirect(flask.url_for("index"), code=302) #force method to get
   #validation failed, flash errors
   return flask.render_template('signup.html',form=form)
+
+@app.route('/signin', methods=['GET','POST'])
+def signin():
+  form = einit.views.SignInForm()
+  if form.validate_on_submit():
+    u = einit.models.User.get_user_by_email(form.name_or_email.data)
+    if u and u.check_password(form.password.data):
+      flask.flash('%s Signed In'%(u.get_name()), 'success')
+      flask.ext.login.login_user(u, remember=True)
+      return flask.redirect(flask.request.args.get("next") or flask.url_for("index"))
+    #otherwise try logging in by name
+    u = einit.models.User.get_user_by_name(form.name_or_email.data)
+    if u and u.check_password(form.password.data):
+      flask.flash('%s Signed In'%(u.get_name()), 'success')
+      flask.ext.login.login_user(u, remember=True)
+      return flask.redirect(flask.request.args.get("next") or flask.url_for("index"))
+    #Uh Oh, we couldn't log them in
+    flask.flash('Invalid username, email or password','danger')
+  #validation failed, flash errors
+  return flask.render_template('signin.html',form=form)
+
+@app.route("/signout")
+@flask.ext.login.login_required
+def signout():
+    flask.ext.login.logout_user()
+    return flask.redirect(flask.url_for("index"))
