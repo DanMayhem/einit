@@ -45,6 +45,10 @@ def index():
   return flask.render_template("index.html")
 
 #user routes
+@app.route('/favicon.ico')
+def favicon():
+    return flask.redirect(flask.url_for('static',filename='images/d20.png'))
+
 @app.route('/signup', methods=['GET','POST'])
 def signup():
   form = einit.views.SignUpForm()
