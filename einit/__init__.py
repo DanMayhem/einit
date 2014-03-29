@@ -31,6 +31,7 @@ sslify = flask_sslify.SSLify(app) #requires SSL
 bcrypt = flaskext.bcrypt.Bcrypt(app) #password digests
 bootstrap = flask_bootstrap.Bootstrap(app) #make bootstrap templates and helpers available.
 login_manager = flask.ext.login.LoginManager(app) #login manager
+login_manager.login_view = "signin"
 
 #import models, views and helpers
 import einit.models
@@ -99,3 +100,12 @@ def signout():
 @flask.ext.login.login_required
 def home():
   return flask.render_template("heroes.html")
+
+@app.route("/heroes/create", methods=['GET','POST'])
+@flask.ext.login.login_required
+def create_hero():
+  form = einit.views.HeroForm()
+  return flask.render_template("create_hero.html",form=form)
+
+
+

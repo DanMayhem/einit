@@ -26,3 +26,20 @@ class SignInForm(w.Form):
   ])
 
   login = f.SubmitField('Sign In')
+
+class HeroForm(w.Form):
+  hero_name = f.StringField('Hero Name')
+  player_name = f.StringField('Player Name', validators=[
+    v.InputRequired('Player name required'),
+  ])
+  level = f.IntegerField('Level', validators=[
+    v.InputRequired('Level required'),
+  ])
+  max_hp = f.IntegerField('Max Hit Points', validators=[
+    v.InputRequired('Max hit hoints required'),
+  ])
+  initiative_modifier = f.IntegerField('Initiative Modifier', validators=[
+    v.InputRequired('Initiative Modifier required'),
+  ])
+
+  save = f.SubmitField('Save Hero')

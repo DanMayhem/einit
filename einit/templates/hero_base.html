@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% import "util.html" as util %}
+{% block main_content %}
+<div class="row">
+  <div class="col-sm-2 panel">
+    <ul class="nav nav-pills nav-stacked">
+      <!--add list item for each hero-->
+    <li>{{util.build_link("Brian")}}</li>
+    <li>{{util.build_link("Shanna")}}</li>
+    <li>{{util.build_link("John")}}</li>
+    <li>{{util.build_link("Bobby")}}</li>
+    <li>{{util.build_link("Nate")}}</li>
+    <li>{{util.build_link("Jed")}}</li>
+    <li>{{util.build_link("Add a hero","#","btn btn-primary")}}</li>
+  </div> 
+  <div class="col-sm-8">
+    <div class="panel panel-default">
+      <div class="panel-body">
+        {% block hero_content %}
+        {% endblock %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

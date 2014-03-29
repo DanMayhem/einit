@@ -2,6 +2,7 @@ import einit
 import Crypto.Random
 import hashlib
 import sqlalchemy
+import sqlalchemy.orm
 
 import flask.ext.login
 
@@ -15,6 +16,8 @@ class UserModel(my_db.Model):
   password_digest = my_db.Column(my_db.String(64))
   session_digest = my_db.Column(my_db.String(64), index = True, unique = True)
   role = my_db.Column(my_db.SmallInteger, default = 0)
+
+  heroes = sqlalchemy.orm.relationship("HeroModel")
 
   def __init__(self, name, email, password):
     self.name = name
@@ -133,3 +136,55 @@ class HeroModel(my_db.Model):
   hero_name = my_db.Column(my_db.String(64))
   player_name = my_db.Column(my_db.String(66))
   level = my_db.Column(my_db.Integer)
+  max_hp = my_db.Column(my_db.Integer)
+  initiative_modifier = my_db.Column(my_db.Integer)
+
+  creator_id = my_db.Column(my_db.Integer,my_db.ForeignKey('users.id'))
+
+class Hero:
+  def __init__(self, u):
+    self.hero_model = HeroModel()
+    self.hero_model.creator_id = u.id
+
+  @property
+  def hero_name(self):
+    return self.hero_model.hero_name
+  @hero_name.setter
+  def hero_name(self, value):
+    self.hero_model.hero_name = value
+
+  @property
+  def player_name(self):
+    return self.hero_model.player_name
+  @player_name.setter
+  def player_name(self, value):
+    self.hero_model.player_name = value
+
+  @property
+  def level(self):
+    return self.hero_model.level
+  @level.setter
+  def level(self, value):
+    self.hero_model.level = value
+
+  @property
+  def max_hp(self):
+    return self.hero_model.max_hp
+  @max_hp.setter
+  def max_hp(self, value):
+    self.hero_model.max_hp = value
+
+  @property
+  def initiative_modifier(self):
+    return self.hero_model.initiative_modifier
+  @initiative_modifier.setter
+  def initiative_modifier(self, value):
+    self.hero_model.initiative_modifier = value
+
+  def save(self):
+    my_db.session.add(self.hero_model)
+    my_db.session.commit()
+
+
+
+

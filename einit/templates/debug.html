@@ -1,10 +1,10 @@
 {% if config['DEBUG'] == True  %}
-
+<div class="container">
 <pre>
 {% for k in request.values.keys() %}
   <kbd>{{k}}</kbd> {{request.values[k]}} <br/>
 {% endfor %}
 </pre>
-
+</div>
 {% endif %}
 <!-- in debug-->
