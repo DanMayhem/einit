@@ -45,3 +45,27 @@ class HeroForm(w.Form):
   ])
 
   save = f.SubmitField('Save Hero')
+
+class MonsterForm(w.Form):
+  name = f.StringField('Name')
+  level = f.IntegerField('Level')
+  second_role = f.SelectField('Role',choices=[('Standard','Standard'),('Minion','Minion'),('Elite','Elite'),('Solo','Solo')])
+  origin = f.StringField('Origin')
+  monster_type = f.StringField('Monster type')
+  keywords = f.StringField('Keywords')
+  max_hp = f.IntegerField('Max HP')
+  initiative_modifier = f.IntegerField('Initiative Modifier')
+  ac = f.IntegerField('AC')
+  fortitude = f.IntegerField('Fortitude')
+  reflex = f.IntegerField('Reflex')
+  will = f.IntegerField('Will')
+  perception = f.IntegerField('Perception')
+  senses = f.StringField('Senses')
+  speed = f.StringField('Speed')
+  immune = f.StringField('Immunities')
+  resist = f.StringField('Resistances')
+  vulnerable = f.StringField('Vulnerabilities')
+  saving_throws = f.IntegerField('Saving throw modifier')
+  action_points = f.IntegerField('Action points')
+
+  save = f.SubmitField('Save Monster')

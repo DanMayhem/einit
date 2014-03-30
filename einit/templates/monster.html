@@ -8,15 +8,14 @@
       {% for m in current_user.get_monsters() %}
       <li
         {% if monster is defined %}
-          defined
-          {% if m.get_id() == montster.get_id() %}
+          {% if m.get_id() == monster.get_id() %}
             class='active'
           {%endif%}
         {%endif%}
       >
       <a href="{{url_for('edit_monster',monster_id=m.get_id())}}">
-        <img src="https://www.gravatar.com/avatar/{{m.get_gravatar_hash()}}?s=30&d=retro" alt="avatar" xheight="35" xwidth="35" class="img-rounded pull-left" />
-        <strong>{{m.hero_name}}</strong><br/><small>{{m.player_name}}</small>
+        <img src="https://www.gravatar.com/avatar/{{m.get_gravatar_hash()}}?s=30&d=monsterid" alt="avatar" xheight="35" xwidth="35" class="img-rounded pull-left" />
+        <strong>{{m.name}}</strong><br/><small>{{m.level}}</small>
       </a></li>
       {% endfor %}
       <li>{{util.build_link("Add a monster",url_for('create_monster'),"btn btn-success")}}</li>
@@ -29,10 +28,15 @@
     <h1 class="panel-title">Manage your Monsters</h1>
   </div>
   <div class="panel-body">
-    {%if current_user.get_monster_count == 0%}
-      To get started, click on the "Add a monster" button on the left. This will
+    {%if current_user.get_monster_count() == 0 %}
+      <p>
+      To get started, click on the "Add a monster" button. This will
       enable you to enter data about your monsters you 
       might want to add to an encounter.
+      </p>
+      <p>
+      {{util.build_link("Add a monster",url_for('create_monster'),"btn btn-success")}}
+      </p>
     {%else%}
       Click on a monster to the left in order to view and edit that monsters's
       properties

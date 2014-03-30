@@ -18,6 +18,7 @@ class UserModel(my_db.Model):
   role = my_db.Column(my_db.SmallInteger, default = 0)
 
   heroes = sqlalchemy.orm.relationship("HeroModel")
+  monsters = sqlalchemy.orm.relationship("MonsterModel")
 
   def __init__(self, name, email, password):
     self.name = name
@@ -63,6 +64,21 @@ class User(flask.ext.login.UserMixin):
     try:
       hero = my_db.session.query(HeroModel).join(UserModel).filter(UserModel.id == self.u.id).filter(HeroModel.id == hero_id).one()
       return Hero(self, hero)
+    except sqlalchemy.orm.exc.NoResultFound:
+      return None
+    except sqlalchemy.orm.exc.MultipleResultsFound:
+      return None
+
+  def get_monsters(self):
+    return map(lambda m: Monster(self, m), self.u.monsters)
+
+  def get_monster_count(self):
+    return len(self.u.monsters)  
+
+  def get_monster_by_id(self, monster_id):
+    try:
+      monster = my_db.session.query(MonsterModel).join(UserModel).filter(UserModel.id == self.u.id).filter(MonsterModel.id == monster_id).one()
+      return Monster(self, monster)
     except sqlalchemy.orm.exc.NoResultFound:
       return None
     except sqlalchemy.orm.exc.MultipleResultsFound:
@@ -258,8 +274,170 @@ class MonsterModel(my_db.Model):
   vulnerable = my_db.Column(my_db.String(64))
   saving_throws = my_db.Column(my_db.Integer)
   action_points = my_db.Column(my_db.Integer)
-  actions = sqlalchemy.relationship("MonsterActionModel")
+  actions = sqlalchemy.orm.relationship("MonsterActionModel")
 
   creator_id = my_db.Column(my_db.Integer,my_db.ForeignKey('users.id'))
+
+class Monster(object):
+  def __init__(self, u, mm=None):
+    if mm is None:
+      self.monster_model = MonsterModel()
+      self.monster_model.creator_id = u.get_id()
+    else:
+      self.monster_model = mm
+
+  @property
+  def name(self):
+    return self.monster_model.name
+  @name.setter
+  def name(self, value):
+    self.monster_model.name = value
+
+  @property
+  def level(self):
+    return self.monster_model.level
+  @level.setter
+  def level(self, value):
+    self.monster_model.level = value
+
+  @property
+  def max_hp(self):
+    return self.monster_model.max_hp
+  @max_hp.setter
+  def max_hp(self, value):
+    self.monster_model.max_hp = value
+
+  @property
+  def initiative_modifier(self):
+    return self.monster_model.initiative_modifier
+  @initiative_modifier.setter
+  def initiative_modifier(self, value):
+    self.monster_model.initiative_modifier = value
+ 
+  @property
+  def second_role(self):
+    return self.monster_model.second_role
+  @second_role.setter
+  def second_role(self, value):
+    self.monster_model.second_role = value
+ 
+  @property
+  def origin(self):
+    return self.monster_model.origin
+  @origin.setter
+  def origin(self, value):
+    self.monster_model.origin = value
+
+  @property
+  def monster_type(self):
+    return self.monster_model.monster_type
+  @monster_type.setter
+  def monster_type(self, value):
+    self.monster_model.monster_type = value
+ 
+  @property
+  def keywords(self):
+    return self.monster_model.keywords
+  @keywords.setter
+  def keywords(self, value):
+    self.monster_model.keywords = value
+ 
+  @property
+  def ac(self):
+    return self.monster_model.ac
+  @ac.setter
+  def ac(self, value):
+    self.monster_model.ac = value
+
+  @property
+  def fortitude(self):
+    return self.monster_model.fortitude
+  @fortitude.setter
+  def fortitude(self, value):
+    self.monster_model.fortitude = value
+
+  @property
+  def reflex(self):
+    return self.monster_model.reflex
+  @reflex.setter
+  def reflex(self, value):
+    self.monster_model.reflex = value
+
+  @property
+  def will(self):
+    return self.monster_model.will
+  @will.setter
+  def will(self, value):
+    self.monster_model.will = value
+
+  @property
+  def perception(self):
+    return self.monster_model.perception
+  @perception.setter
+  def perception(self, value):
+    self.monster_model.perception = value
+
+  @property
+  def senses(self):
+    return self.monster_model.senses
+  @senses.setter
+  def senses(self, value):
+    self.monster_model.senses = value
+
+  @property
+  def speed(self):
+    return self.monster_model.speed
+  @speed.setter
+  def speed(self, value):
+    self.monster_model.speed = value
+
+  @property
+  def immune(self):
+    return self.monster_model.immune
+  @immune.setter
+  def immune(self, value):
+    self.monster_model.immune = value
+
+  @property
+  def resist(self):
+    return self.monster_model.resist
+  @resist.setter
+  def resist(self, value):
+    self.monster_model.resist = value
+
+  @property
+  def vulnerable(self):
+    return self.monster_model.vulnerable
+  @vulnerable.setter
+  def vulnerable(self, value):
+    self.monster_model.vulnerable = value
+
+  @property
+  def saving_throws(self):
+    return self.monster_model.saving_throws
+  @saving_throws.setter
+  def saving_throws(self, value):
+    self.monster_model.saving_throws = value
+
+  @property
+  def action_points(self):
+    return self.monster_model.action_points
+  @action_points.setter
+  def action_points(self, value):
+    self.monster_model.action_points = value
+ 
+  def save(self):
+    my_db.session.add(self.monster_model)
+    my_db.session.commit()
+
+  def get_id(self):
+    return self.monster_model.id
+
+  def get_gravatar_hash(self):
+    return hashlib.md5(self.monster_model.name).hexdigest()
+
+  def destroy(self):
+    my_db.session.delete(self.monster_model)
+    my_db.session.commit()
 
 

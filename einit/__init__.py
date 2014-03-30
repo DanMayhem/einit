@@ -154,7 +154,106 @@ def destroy_hero(hero_id):
     hero.destroy()
   return flask.redirect(flask.url_for('hero'))
 
+@app.route("/monster")
+@flask.ext.login.login_required
+def monster():
+  return flask.render_template("monster.html")
 
+@app.route("/monster/create", methods=['GET','POST'])
+@flask.ext.login.login_required
+def create_monster():
+  form = einit.views.MonsterForm()
+  if form.validate_on_submit():
+    m = einit.models.Monster(flask.ext.login.current_user)
+    m.name = form.name.data
+    m.level = form.level.data
+    m.second_role = form.second_role.data
+    m.origin = form.origin.data
+    m.monster_type = form.monster_type.data
+    m.keywords = form.keywords.data
+    m.max_hp = form.max_hp.data
+    m.initiative_modifier = form.initiative_modifier.data
+    m.ac = form.ac.data
+    m.fortitude = form.fortitude.data
+    m.reflex = form.reflex.data
+    m.will = form.will.data
+    m.perception = form.perception.data
+    m.senses = form.senses.data
+    m.speed = form.speed.data
+    m.immune = form.immune.data
+    m.resist = form.resist.data
+    m.vulnerable = form.vulnerable.data
+    m.saving_throws = form.saving_throws.data
+    m.action_points = form.action_points.data
+    m.save()
+    flask.flash("Monster created",'success')
+    return flask.redirect(flask.url_for("edit_monster",monster_id=m.get_id()))
+  return flask.render_template("create_monster.html",form=form)
+
+@app.route("/monster/<int:monster_id>", methods=['GET','PUT','POST'])
+@flask.ext.login.login_required
+def edit_monster(monster_id):
+  form = einit.views.MonsterForm()
+  m = flask.ext.login.current_user.get_monster_by_id(monster_id)
+  if m is None:
+    flask.flash('Unable to find monster','warning')
+    flask.redirect(flask.url_for('index'))
+  if form.validate_on_submit():
+    m.name = form.name.data
+    m.level = form.level.data
+    m.second_role = form.second_role.data
+    m.origin = form.origin.data
+    m.monster_type = form.monster_type.data
+    m.keywords = form.keywords.data
+    m.max_hp = form.max_hp.data
+    m.initiative_modifier = form.initiative_modifier.data
+    m.ac = form.ac.data
+    m.fortitude = form.fortitude.data
+    m.reflex = form.reflex.data
+    m.will = form.will.data
+    m.perception = form.perception.data
+    m.senses = form.senses.data
+    m.speed = form.speed.data
+    m.immune = form.immune.data
+    m.resist = form.resist.data
+    m.vulnerable = form.vulnerable.data
+    m.saving_throws = form.saving_throws.data
+    m.action_points = form.action_points.data
+    m.save()
+    flask.flash("%s updated"%(hero.hero_name),'success')
+  else:
+    form.name.data = m.name
+    form.level.data = m.level
+    form.second_role.data = m.second_role
+    form.origin.data = m.origin
+    form.monster_type.data = m.monster_type
+    form.keywords.data = m.keywords
+    form.max_hp.data = m.max_hp
+    form.initiative_modifier.data = m.initiative_modifier
+    form.ac.data = m.ac
+    form.fortitude.data = m.fortitude
+    form.reflex.data = m.reflex
+    form.will.data = m.will
+    form.perception.data = m.perception
+    form.senses.data = m.senses
+    form.speed.data = m.speed
+    form.immune.data = m.immune
+    form.resist.data = m.resist
+    form.vulnerable.data = m.vulnerable
+    form.saving_throws.data = m.saving_throws
+    form.action_points.data = m.action_points
+  return flask.render_template("edit_monster.html",form=form, monster=m)
+
+@app.route("/monster/destroy/<int:monster_id>", methods=['GET','DELETE'])
+@flask.ext.login.login_required
+def destroy_monster(monster_id):
+  monster = flask.ext.login.current_user.get_monster_by_id(monster_id)
+  if monster is None:
+    flask.flash("Could not find monster",'warning')
+  else:
+    flask.flash("%s Deleted forever"%(monster.name),'danger')
+    monster.destroy()
+  return flask.redirect(flask.url_for('monster'))
 
 
 

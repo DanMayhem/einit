@@ -1,0 +1,27 @@
+{% extends "monster.html" %}
+{% block monster_content %}
+{% import 'bootstrap/wtf.html' as wtf %}
+{% import "util.html" as util %}
+
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h1 class="panel-title">
+        <img src="https://www.gravatar.com/avatar/{{monster.get_gravatar_hash()}}?s=30&d=monsterid" alt="avatar" xheight="35" xwidth="35" class="img-rounded pull-left" />
+      Edit {{monster.name}}
+    </h1>
+  </div>
+  <div class="panel-body">
+    {{
+      wtf.quick_form(
+        form,
+        action=url_for('edit_monster',monster_id=monster.get_id()),
+        button_map = {
+          'save': 'primary'
+        }
+      )
+    }}
+    {{util.build_link('Delete monster',url_for('destroy_monster',monster_id=monster.get_id()),"btn btn-danger")}}
+  </div>
+</div>
+
+{% endblock %}
