@@ -143,6 +143,28 @@ def edit_hero(hero_id):
     form.initiative_modifier.data = hero.initiative_modifier
   return flask.render_template("edit_hero.html",form=form, hero=hero)
 
+@app.route("/hero/destroy/<int:hero_id>", methods=['GET','DELETE'])
+@flask.ext.login.login_required
+def destroy_hero(hero_id):
+  hero = flask.ext.login.current_user.get_hero_by_id(hero_id)
+  if hero is None:
+    flask.flash("Could not find hero",'warning')
+  else:
+    flask.flash("%s Deleted forever"%(hero.hero_name),'danger')
+    hero.destroy()
+  return flask.redirect(flask.url_for('hero'))
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

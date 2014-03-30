@@ -209,5 +209,10 @@ class Hero(object):
   def get_gravatar_hash(self):
     return hashlib.md5(self.hero_model.player_name).hexdigest()
 
+  def destroy(self):
+    my_db.session.delete(self.hero_model)
+    my_db.session.commit()
+
+
 
 
