@@ -28,7 +28,9 @@ class SignInForm(w.Form):
   login = f.SubmitField('Sign In')
 
 class HeroForm(w.Form):
-  hero_name = f.StringField('Hero Name')
+  hero_name = f.StringField('Hero Name', validators=[
+    v.InputRequired('Hero name required'),
+  ])
   player_name = f.StringField('Player Name', validators=[
     v.InputRequired('Player name required'),
   ])

@@ -1,16 +1,20 @@
 {% extends "hero.html" %}
 {% block hero_content %}
 {% import 'bootstrap/wtf.html' as wtf %}
+{% import "util.html" as util %}
 
 <div class="panel panel-default">
   <div class="panel-heading">
-    <h1 class="panel-title">Create a hero</h1>
+    <h1 class="panel-title">
+      {{util.gravatar_small(hero)}}
+      Edit {{hero.hero_name}}
+    </h1>
   </div>
   <div class="panel-body">
     {{
       wtf.quick_form(
         form,
-        action=url_for('create_hero'),
+        action=url_for('edit_hero',hero_id=hero.get_id()),
         button_map = {
           'save': 'primary'
         }

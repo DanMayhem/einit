@@ -53,6 +53,21 @@ class User(flask.ext.login.UserMixin):
   def check_password(self, password):
     return einit.bcrypt.check_password_hash(self.u.password_digest,password)
 
+  def get_heroes(self):
+    return map(lambda h: Hero(self, h), self.u.heroes)
+
+  def get_hero_count(self):
+    return len(self.u.heroes)  
+
+  def get_hero_by_id(self, hero_id):
+    try:
+      hero = my_db.session.query(HeroModel).join(UserModel).filter(UserModel.id == self.u.id).filter(HeroModel.id == hero_id).one()
+      return Hero(self, hero)
+    except sqlalchemy.orm.exc.NoResultFound:
+      return None
+    except sqlalchemy.orm.exc.MultipleResultsFound:
+      return None
+
   @staticmethod
   def get_user_by_name(name):
     try:
@@ -141,10 +156,13 @@ class HeroModel(my_db.Model):
 
   creator_id = my_db.Column(my_db.Integer,my_db.ForeignKey('users.id'))
 
-class Hero:
-  def __init__(self, u):
-    self.hero_model = HeroModel()
-    self.hero_model.creator_id = u.id
+class Hero(object):
+  def __init__(self, u, hm=None):
+    if hm is None:
+      self.hero_model = HeroModel()
+      self.hero_model.creator_id = u.get_id()
+    else:
+      self.hero_model = hm
 
   @property
   def hero_name(self):
@@ -185,6 +203,11 @@ class Hero:
     my_db.session.add(self.hero_model)
     my_db.session.commit()
 
+  def get_id(self):
+    return self.hero_model.id
+
+  def get_gravatar_hash(self):
+    return hashlib.md5(self.hero_model.player_name).hexdigest()
 
 
 

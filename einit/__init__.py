@@ -32,6 +32,7 @@ bcrypt = flaskext.bcrypt.Bcrypt(app) #password digests
 bootstrap = flask_bootstrap.Bootstrap(app) #make bootstrap templates and helpers available.
 login_manager = flask.ext.login.LoginManager(app) #login manager
 login_manager.login_view = "signin"
+login_manager.login_message_category = 'warning'
 
 #import models, views and helpers
 import einit.models
@@ -43,7 +44,7 @@ import einit.user_support
 @app.route('/index')
 def index():
   if flask.ext.login.current_user.is_authenticated():
-    return flask.redirect(flask.url_for('home'))
+    return flask.redirect(flask.url_for('hero'))
   return flask.render_template("index.html")
 
 #user routes
@@ -96,16 +97,52 @@ def signout():
     flask.ext.login.logout_user()
     return flask.redirect(flask.url_for("index"))
 
+@app.route("/hero")
 @app.route("/home")
 @flask.ext.login.login_required
-def home():
-  return flask.render_template("heroes.html")
+def hero():
+  return flask.render_template("hero.html")
 
-@app.route("/heroes/create", methods=['GET','POST'])
+@app.route("/hero/create", methods=['GET','POST'])
 @flask.ext.login.login_required
 def create_hero():
   form = einit.views.HeroForm()
+  if form.validate_on_submit():
+    h = einit.models.Hero(flask.ext.login.current_user)
+    h.hero_name = form.hero_name.data
+    h.player_name = form.player_name.data
+    h.level = form.level.data
+    h.max_hp = form.max_hp.data
+    h.initiative_modifier = form.initiative_modifier.data
+    h.save()
+    flask.flash("Hero created",'success')
+    return flask.redirect(flask.url_for("edit_hero",hero_id=h.get_id()))
   return flask.render_template("create_hero.html",form=form)
+
+@app.route("/hero/<int:hero_id>", methods=['GET','PUT','POST'])
+@flask.ext.login.login_required
+def edit_hero(hero_id):
+  form = einit.views.HeroForm()
+  hero = flask.ext.login.current_user.get_hero_by_id(hero_id)
+  if hero is None:
+    flask.flash('Unable to find hero','warning')
+    flask.redirect(flask.url_for('index'))
+  if form.validate_on_submit():
+    hero.hero_name = form.hero_name.data
+    hero.player_name = form.player_name.data
+    hero.level = form.level.data
+    hero.max_hp = form.max_hp.data
+    hero.initiative_modifier = form.initiative_modifier.data
+    hero.save()
+    flask.flash("%s updated"%(hero.hero_name),'success')
+  else:
+    form.hero_name.data = hero.hero_name
+    form.player_name.data = hero.player_name
+    form.level.data = hero.level
+    form.max_hp.data = hero.max_hp
+    form.initiative_modifier.data = hero.initiative_modifier
+  return flask.render_template("edit_hero.html",form=form, hero=hero)
+
 
 
 
