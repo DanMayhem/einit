@@ -220,7 +220,7 @@ def edit_monster(monster_id):
     m.saving_throws = form.saving_throws.data
     m.action_points = form.action_points.data
     m.save()
-    flask.flash("%s updated"%(hero.hero_name),'success')
+    flask.flash("%s updated"%(m.name),'success')
   else:
     form.name.data = m.name
     form.level.data = m.level
