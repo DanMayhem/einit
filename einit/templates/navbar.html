@@ -14,7 +14,7 @@
     <ul class="nav navbar-nav">
       {% if current_user.is_authenticated %}
       <li>{{util.build_link('Heroes',url_for('hero'))}}</li>
-      <li>{{util.build_link('Monsters')}}</li>
+      <li>{{util.build_link('Monsters', url_for('monster'))}}</li>
       <li>{{util.build_link('Encounters')}}</li>
       {% endif %}
     </ul>
