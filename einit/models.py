@@ -213,6 +213,53 @@ class Hero(object):
     my_db.session.delete(self.hero_model)
     my_db.session.commit()
 
+class MonsterActionModel(my_db.Model):
+  __tablename__ = 'monster_actions'
+  id = my_db.Column(my_db.Integer, primary_key = True)
+  category = my_db.Column(my_db.String(64))
+  usage = my_db.Column(my_db.String(64))
+  recharge = my_db.Column(my_db.String(64))
+  frequency = my_db.Column(my_db.String(64))
+  icon = my_db.Column(my_db.String(64))
+  name = my_db.Column(my_db.String(64))
+  description = my_db.Column(my_db.String(512))
+  requirement = my_db.Column(my_db.String(64))
+  attack = my_db.Column(my_db.String(64))
+  hit = my_db.Column(my_db.String(128))
+  miss = my_db.Column(my_db.String(128))
+  effect = my_db.Column(my_db.String(128))
+  secondary_attack = my_db.Column(my_db.String(128))
+  aftereffect = my_db.Column(my_db.String(128))
+  special = my_db.Column(my_db.String(512))
 
+  monster_id = my_db.Column(my_db.Integer,my_db.ForeignKey('monsters.id'))
+
+
+class MonsterModel(my_db.Model):
+  __tablename__='monsters'
+  id = my_db.Column(my_db.Integer, primary_key = True)
+  name = my_db.Column(my_db.String(64))
+  level = my_db.Column(my_db.Integer)
+  second_role = my_db.Column(my_db.String(64))
+  origin = my_db.Column(my_db.String(64))
+  monster_type = my_db.Column(my_db.String(64))
+  keywords = my_db.Column(my_db.String(256))
+  max_hp = my_db.Column(my_db.Integer)
+  initiative_modifier = my_db.Column(my_db.Integer)
+  ac = my_db.Column(my_db.Integer)
+  fortitude = my_db.Column(my_db.Integer)
+  reflex = my_db.Column(my_db.Integer)
+  will = my_db.Column(my_db.Integer)
+  perception = my_db.Column(my_db.Integer)
+  senses = my_db.Column(my_db.String(256))
+  speed = my_db.Column(my_db.String(64))
+  immune = my_db.Column(my_db.String(64))
+  resist = my_db.Column(my_db.String(64))
+  vulnerable = my_db.Column(my_db.String(64))
+  saving_throws = my_db.Column(my_db.Integer)
+  action_points = my_db.Column(my_db.Integer)
+  actions = sqlalchemy.relationship("MonsterActionModel")
+
+  creator_id = my_db.Column(my_db.Integer,my_db.ForeignKey('users.id'))
 
 
