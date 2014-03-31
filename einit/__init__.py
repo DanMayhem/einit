@@ -190,14 +190,23 @@ def create_monster():
     return flask.redirect(flask.url_for("edit_monster",monster_id=m.get_id()))
   return flask.render_template("create_monster.html",form=form)
 
-@app.route("/monster/<int:monster_id>", methods=['GET','PUT','POST'])
+@app.route("/monster/<int:monster_id>", methods=['GET'])
+@flask.ext.login.login_required
+def view_monster(monster_id):
+  m = flask.ext.login.current_user.get_monster_by_id(monster_id)
+  if m is None:
+    flask.flash('Unable to find monster','warning')
+    return flask.redirect(flask.url_for('index'))
+  return flask.render_template("view_monster.html",monster=m)
+
+@app.route("/monster/<int:monster_id>/edit", methods=['GET','PUT','POST'])
 @flask.ext.login.login_required
 def edit_monster(monster_id):
   form = einit.views.MonsterForm()
   m = flask.ext.login.current_user.get_monster_by_id(monster_id)
   if m is None:
     flask.flash('Unable to find monster','warning')
-    flask.redirect(flask.url_for('index'))
+    return sflask.redirect(flask.url_for('index'))
   if form.validate_on_submit():
     m.name = form.name.data
     m.level = form.level.data

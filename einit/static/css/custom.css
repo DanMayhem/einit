@@ -3,3 +3,23 @@
 body {
   padding-top: 100px;
 }
+
+.monster-type {
+  font-size: .9em;
+}
+
+.monster-name {
+  width:75%;
+  float:left;
+}
+
+.monster-level {
+  width:25%;
+  float:right;
+  text-align:right;
+}
+
+.monster-panel-heading{
+  overflow:hidden;
+  width:100%;
+}

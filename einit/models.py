@@ -229,28 +229,6 @@ class Hero(object):
     my_db.session.delete(self.hero_model)
     my_db.session.commit()
 
-class MonsterActionModel(my_db.Model):
-  __tablename__ = 'monster_actions'
-  id = my_db.Column(my_db.Integer, primary_key = True)
-  category = my_db.Column(my_db.String(64))
-  usage = my_db.Column(my_db.String(64))
-  recharge = my_db.Column(my_db.String(64))
-  frequency = my_db.Column(my_db.String(64))
-  icon = my_db.Column(my_db.String(64))
-  name = my_db.Column(my_db.String(64))
-  description = my_db.Column(my_db.String(512))
-  requirement = my_db.Column(my_db.String(64))
-  attack = my_db.Column(my_db.String(64))
-  hit = my_db.Column(my_db.String(128))
-  miss = my_db.Column(my_db.String(128))
-  effect = my_db.Column(my_db.String(128))
-  secondary_attack = my_db.Column(my_db.String(128))
-  aftereffect = my_db.Column(my_db.String(128))
-  special = my_db.Column(my_db.String(512))
-
-  monster_id = my_db.Column(my_db.Integer,my_db.ForeignKey('monsters.id'))
-
-
 class MonsterModel(my_db.Model):
   __tablename__='monsters'
   id = my_db.Column(my_db.Integer, primary_key = True)
@@ -439,5 +417,30 @@ class Monster(object):
   def destroy(self):
     my_db.session.delete(self.monster_model)
     my_db.session.commit()
+
+  def get_xp(self):
+    return 100
+
+
+class MonsterActionModel(my_db.Model):
+  __tablename__ = 'monster_actions'
+  id = my_db.Column(my_db.Integer, primary_key = True)
+  category = my_db.Column(my_db.String(64))
+  usage = my_db.Column(my_db.String(64))
+  recharge = my_db.Column(my_db.String(64))
+  frequency = my_db.Column(my_db.String(64))
+  icon = my_db.Column(my_db.String(64))
+  name = my_db.Column(my_db.String(64))
+  description = my_db.Column(my_db.String(512))
+  requirement = my_db.Column(my_db.String(64))
+  attack = my_db.Column(my_db.String(64))
+  hit = my_db.Column(my_db.String(128))
+  miss = my_db.Column(my_db.String(128))
+  effect = my_db.Column(my_db.String(128))
+  secondary_attack = my_db.Column(my_db.String(128))
+  aftereffect = my_db.Column(my_db.String(128))
+  special = my_db.Column(my_db.String(512))
+
+  monster_id = my_db.Column(my_db.Integer,my_db.ForeignKey('monsters.id'))
 
 

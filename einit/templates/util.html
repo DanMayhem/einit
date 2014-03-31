@@ -5,3 +5,22 @@
 {% macro gravatar_small(c) -%}
   <img src="https://www.gravatar.com/avatar/{{c.get_gravatar_hash()}}?s=30&d=retro" alt="avatar" xheight="35" xwidth="35" class="img-rounded" />
 {%- endmacro %}
+
+{% macro display_monster(m) %}
+
+<div class="panel panel-default">
+  <div class="panel-heading monster-panel-heading">
+    <div class="monster-name">
+      <strong>{{m.name}}</strong><br/>
+      <small>{{m.monster_type}}{% if m.keywords|trim %}({{m.keywords}}){% endif %}</small>
+    </div>
+    <div class="monster-level">
+      <strong>Level:</strong>{{m.level}}{%if m.second_role != 'Standard'%}{{m.second_role}}{%endif%}</br>
+      <small>{{m.get_xp()}} XP</small>
+    </div>
+  </div>
+  <div class="panel-body monster-panel-body">
+  </div>
+</div>
+
+{% endmacro %}
