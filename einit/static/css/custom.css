@@ -4,22 +4,22 @@ body {
   padding-top: 100px;
 }
 
-.monster-type {
-  font-size: .9em;
-}
-
-.monster-name {
+.monster-left {
   width:75%;
   float:left;
 }
 
-.monster-level {
+.monster-right{
   width:25%;
   float:right;
   text-align:right;
 }
 
 .monster-panel-heading{
+  overflow:hidden;
+  width:100%;
+}\
+.monster-panel-body{
   overflow:hidden;
   width:100%;
 }
