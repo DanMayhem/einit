@@ -83,9 +83,7 @@ class MonsterActionForm(w.Form):
   #  ('Encounter','Encounter'),
   #  ('Recharge','Recharge')
   #  ])
-  recharge = f.IntegerField('Recharge on', validators=[
-    v.Optional(),
-    v.NumberRange(min=2, max=6)])
+  recharge = f.StringField('Recharge on', description='e.g. 5+ or "when bloodied"')
   frequency = f.SelectField('Usage',choices=[
     ('',''),
     ('At-Will','At-Will'),

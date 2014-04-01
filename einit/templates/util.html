@@ -62,3 +62,14 @@
 </div>
 
 {% endmacro %}
+
+{% macro display_recharge(recharge_string)%}
+  {{recharge_string}}
+{% endmacro %}
+
+{% macro display_action(action, editable=True) %}
+  <div class="list-group-item list-group-item-info">
+    <strong>action.name</strong>
+    {{ "(%s)"%action.keywords if action.keywords|trim }
+    {{ '<strong><span class="glyph-icon glyph-icon-asterisk"/>%s</strong>'%action.frequency if action.frequency|trim }}
+    {{ display_recharge(action.recharge) }}
