@@ -20,7 +20,7 @@ app.config['CSRF_ENABLED'] = True
 
 #load databases
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL',"sqllite://")
-app.config['SQLALCHEMY_MIGRATE_REPO'] = os.path.join(os.path.abspath(os.path.split(os.path.dirname(__file__))[0]),'migrations')
+#app.config['SQLALCHEMY_MIGRATE_REPO'] = os.path.join(os.path.abspath(os.path.split(os.path.dirname(__file__))[0]),'migrations')
 db = flask.ext.sqlalchemy.SQLAlchemy(app)
 
 #load secure token
@@ -31,8 +31,6 @@ sslify = flask_sslify.SSLify(app) #requires SSL
 bcrypt = flaskext.bcrypt.Bcrypt(app) #password digests
 bootstrap = flask_bootstrap.Bootstrap(app) #make bootstrap templates and helpers available.
 login_manager = flask.ext.login.LoginManager(app) #login manager
-login_manager.login_view = "signin"
-login_manager.login_message_category = 'warning'
 
 #import models, views and helpers
 import einit.models
@@ -143,7 +141,7 @@ def edit_hero(hero_id):
     form.initiative_modifier.data = hero.initiative_modifier
   return flask.render_template("edit_hero.html",form=form, hero=hero)
 
-@app.route("/hero/destroy/<int:hero_id>", methods=['GET','DELETE'])
+@app.route("/hero/<int:hero_id>/destroy", methods=['GET','DELETE'])
 @flask.ext.login.login_required
 def destroy_hero(hero_id):
   hero = flask.ext.login.current_user.get_hero_by_id(hero_id)
@@ -187,7 +185,7 @@ def create_monster():
     m.action_points = form.action_points.data
     m.save()
     flask.flash("Monster created",'success')
-    return flask.redirect(flask.url_for("edit_monster",monster_id=m.get_id()))
+    return flask.redirect(flask.url_for("view_monster",monster_id=m.get_id()))
   return flask.render_template("create_monster.html",form=form)
 
 @app.route("/monster/<int:monster_id>", methods=['GET'])
@@ -253,7 +251,7 @@ def edit_monster(monster_id):
     form.action_points.data = m.action_points
   return flask.render_template("edit_monster.html",form=form, monster=m)
 
-@app.route("/monster/destroy/<int:monster_id>", methods=['GET','DELETE'])
+@app.route("/monster/<int:monster_id>/destroy", methods=['GET','DELETE'])
 @flask.ext.login.login_required
 def destroy_monster(monster_id):
   monster = flask.ext.login.current_user.get_monster_by_id(monster_id)
@@ -264,6 +262,89 @@ def destroy_monster(monster_id):
     monster.destroy()
   return flask.redirect(flask.url_for('monster'))
 
+@app.route("/monster/<int:monster_id>/action/create",methods=['GET','POST'])
+@flask.ext.login.login_required
+def create_monster_action(monster_id):
+  form = einit.views.MonsterActionForm()
+  monster = flask.ext.login.current_user.get_monster_by_id(monster_id)
+  if monster is None:
+    flask.flash("Could not find monster","warning")
+    return flask.redirect(flask.url_for('monster'))
+  if form.validate_on_submit():
+    ma = einit.models.MonsterAction(monster)
+    ma.category = form.category.data
+    ma.recharge = form.recharge.data
+    ma.frequency = form.frequency.data
+    ma.name = form.name.data
+    ma.keywords = form.keywords.data
+    ma.description = form.description.data
+    ma.requirement = form.requirement.data
+    ma.attack = form.attack.data
+    ma.hit = form.hit.data
+    ma.miss = form.miss.data
+    ma.effect = form.effect.data
+    ma.secondary_attack = form.secondary_attack.data
+    ma.aftereffect = form.aftereffect.data
+    ma.special = form.special.data
+    ma.save()
+    flask.flash("Monster action created",'success')
+    return flask.redirect(flask.url_for("view_monster",monster_id=monster_id))
+  return flask.render_template("create_monster_action.html",form=form, monster=monster)
+
+@app.route("/monster/<int:monster_id>/action/<int:action_id>")
+@flask.ext.login.login_required
+def view_monster_action(monster_id, action_id):
+  return flask.redirect(flask.url_for('view_monster',monster_id=monster_id))
+
+@app.route("/monster/<int:monster_id>/action/<int:action_id>/edit",methods=['GET','POST','PUT'])
+@flask.ext.login.login_required
+def edit_monster_action(monster_id, action_id):
+  form = einit.views.MonsterActionForm()
+  monster = flask.ext.login.current_user.get_monster_by_id(monster_id)
+  if monster is None:
+    flask.flash("Could not find monster","warning")
+    return flask.redirect(flask.url_for('monster'))
+  ma = monster.get_action_by_id(action_id)
+  if ma is None:
+    flask.flash("Could not find monster action",'warning')
+    return flask.redirect(flask.url_for('view_monster',monster_id=monster_id))
+  if form.validate_on_submit():
+    ma.category = form.category.data
+    ma.recharge = form.recharge.data
+    ma.frequency = form.frequency.data
+    ma.name = form.name.data
+    ma.keywords = form.keywords.data
+    ma.description = form.description.data
+    ma.requirement = form.requirement.data
+    ma.attack = form.attack.data
+    ma.hit = form.hit.data
+    ma.miss = form.miss.data
+    ma.effect = form.effect.data
+    ma.secondary_attack = form.secondary_attack.data
+    ma.aftereffect = form.aftereffect.data
+    ma.special = form.special.data
+    ma.save()
+    flask.flash("Monster action updated",'success')
+    return flask.redirect(flask.url_for("view_monster",monster_id=m.get_id()))
+  else:
+    pass
+  return flask.render_template("edit_monster_action.html",form=form, monster=monster)
+
+@app.route("/monster/<int:monster_id>/action/<int:action_id>/destroy", methods=['GET','DELETE'])
+@flask.ext.login.login_required
+def destroy_monster_action(monster_id, action_id):
+  monster = flask.ext.login.current_user.get_monster_by_id(monster_id)
+  if monster is None:
+    flask.flash("Could not find monster",'warning')
+    return flask.redirect(flask.url_for('monster'))
+  else:
+    action = monster.get_action_by_id(action_id)
+    if action is None:
+      flask.flash("Could not find action", 'warning')
+    else:
+      flask.flash("%s Deleted forever"%(action.name),'danger')
+      action.destroy()
+  return flask.redirect(flask.url_for('view_monster',monster_id=monster_id))
 
 
 

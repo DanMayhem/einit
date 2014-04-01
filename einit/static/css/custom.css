@@ -15,11 +15,7 @@ body {
   text-align:right;
 }
 
-.monster-panel-heading{
-  overflow:hidden;
-  width:100%;
-}\
-.monster-panel-body{
+.monster-panel{
   overflow:hidden;
   width:100%;
 }

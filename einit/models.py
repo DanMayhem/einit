@@ -421,6 +421,18 @@ class Monster(object):
   def get_xp(self):
     return 100
 
+  def get_action_by_id(self, action_id):
+    try:
+      action = my_db.session.query(MonsterActionModel).join(MonsterModel).filter(MonsterModel.id == self.monster_model.id).filter(MonsterAction.id == action_id).one()
+      return Monster(self, monster)
+    except sqlalchemy.orm.exc.NoResultFound:
+      return None
+    except sqlalchemy.orm.exc.MultipleResultsFound:
+      return None
+
+  def get_traits(self):
+    return filter(lambda a:a.category=='Trait',self.monster_model.actions)
+
 
 class MonsterActionModel(my_db.Model):
   __tablename__ = 'monster_actions'
@@ -440,7 +452,138 @@ class MonsterActionModel(my_db.Model):
   secondary_attack = my_db.Column(my_db.String(128))
   aftereffect = my_db.Column(my_db.String(128))
   special = my_db.Column(my_db.String(512))
+  keywords = my_db.Column(my_db.String(64))
 
   monster_id = my_db.Column(my_db.Integer,my_db.ForeignKey('monsters.id'))
 
+class MonsterAction(object):
+  def __init__(self, monster, ma=None):
+    if ma is None:
+      self.monster_action = MonsterActionModel()
+      self.monster_action.monster_id = monster.get_id()
+    else:
+      self.monster_action = ma
+
+  @property
+  def category(self):
+    return self.monster_action.category
+  @category.setter
+  def category(self, value):
+    self.monster_action.category = value
+
+  @property
+  def usage(self):
+    return self.monster_action.usage
+  @usage.setter
+  def usage(self, value):
+    self.monster_action.usage = value
+    
+  @property
+  def recharge(self):
+    return self.monster_action.recharge
+  @recharge.setter
+  def recharge(self, value):
+    self.monster_action.recharge = value
+    
+  @property
+  def frequency(self):
+    return self.monster_action.frequency
+  @frequency.setter
+  def frequency(self, value):
+    self.monster_action.frequency = value
+    
+  @property
+  def icon(self):
+    return self.monster_action.icon
+  @icon.setter
+  def icon(self, value):
+    self.monster_action.icon = value
+    
+  @property
+  def name(self):
+    return self.monster_action.name
+  @name.setter
+  def name(self, value):
+    self.monster_action.name = value
+    
+  @property
+  def description(self):
+    return self.monster_action.description
+  @description.setter
+  def description(self, value):
+    self.monster_action.description = value
+    
+  @property
+  def requirement(self):
+    return self.monster_action.requirement
+  @requirement.setter
+  def requirement(self, value):
+    self.monster_action.requirement = value
+    
+  @property
+  def attack(self):
+    return self.monster_action.attack
+  @attack.setter
+  def attack(self, value):
+    self.monster_action.attack = value
+    
+  @property
+  def hit(self):
+    return self.monster_action.hit
+  @hit.setter
+  def hit(self, value):
+    self.monster_action.hit = value
+    
+  @property
+  def miss(self):
+    return self.monster_action.miss
+  @miss.setter
+  def miss(self, value):
+    self.monster_action.miss = value
+    
+  @property
+  def effect(self):
+    return self.monster_action.effect
+  @effect.setter
+  def effect(self, value):
+    self.monster_action.effect = value
+    
+  @property
+  def secondary_attack(self):
+    return self.monster_action.secondary_attack
+  @secondary_attack.setter
+  def secondary_attack(self, value):
+    self.monster_action.secondary_attack = value
+    
+  @property
+  def aftereffect(self):
+    return self.monster_action.aftereffect
+  @aftereffect.setter
+  def aftereffect(self, value):
+    self.monster_action.aftereffect = value
+    
+  @property
+  def special(self):
+    return self.monster_action.special
+  @special.setter
+  def special(self, value):
+    self.monster_action.special = value
+    
+  @property
+  def keywords(self):
+    return self.monster_action.keywords
+  @keywords.setter
+  def keywords(self, value):
+    self.monster_action.keywords = value
+    
+  def save(self):
+    my_db.session.add(self.monster_action)
+    my_db.session.commit()
+
+  def get_id(self):
+    return self.monster_model.id
+
+  def destroy(self):
+    my_db.session.delete(self.monster_model)
+    my_db.session.commit()
 

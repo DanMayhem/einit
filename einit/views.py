@@ -65,7 +65,44 @@ class MonsterForm(w.Form):
   immune = f.StringField('Immunities')
   resist = f.StringField('Resistances')
   vulnerable = f.StringField('Vulnerabilities')
-  saving_throws = f.IntegerField('Saving throw modifier')
-  action_points = f.IntegerField('Action points')
+  saving_throws = f.IntegerField('Saving throw modifier', validators=[v.Optional()])
+  action_points = f.IntegerField('Action points', validators=[v.Optional()])
 
   save = f.SubmitField('Save Monster')
+
+class MonsterActionForm(w.Form):
+  category = f.SelectField('Category',choices=[
+    ('Trait','Trait'),
+    ('Move','Move'),
+    ('Minor','Minor'),
+    ('Standard','Standard'),
+    ('Triggered','Triggered')])
+  #usage = f.SelectField('Usage',choices=[
+  #  ('',''),
+  #  ('At-Will','At-Will'),
+  #  ('Encounter','Encounter'),
+  #  ('Recharge','Recharge')
+  #  ])
+  recharge = f.IntegerField('Recharge on', validators=[
+    v.Optional(),
+    v.NumberRange(min=2, max=6)])
+  frequency = f.SelectField('Usage',choices=[
+    ('',''),
+    ('At-Will','At-Will'),
+    ('Encounter','Encounter'),
+    ('Recharge','Recharge')
+    ])
+  #icon = my_db.Column(my_db.String(64))
+  name = f.StringField('Name')
+  keywords = f.StringField('Keywords')
+  description = f.TextAreaField('Description')
+  requirement = f.StringField('Requirement')
+  attack = f.StringField('Attack', description="e.g. +12 vs AC")
+  hit = f.StringField("Hit")
+  miss = f.StringField("Miss")
+  effect = f.StringField("Effect")
+  secondary_attack = f.StringField("Secondary Attack")
+  aftereffect = f.StringField("After-Effect")
+  special = f.StringField("Special")
+
+  save = f.SubmitField('Save action')

@@ -9,7 +9,7 @@
 {% macro display_monster(m, editable=True) %}
 
 <div class="panel panel-primary">
-  <div class="panel-heading monster-panel-heading">
+  <div class="panel-heading monster-panel">
     <div class="monster-left">
       <strong>{{m.name}}</strong><br/>
       <small>{{m.monster_type}}{% if m.keywords|trim %}({{m.keywords}}){% endif %}</small>
@@ -19,7 +19,7 @@
       <small>{{m.get_xp()}} XP</small>
     </div>
   </div>
-  <div class="panel-body monster-panel-body">
+  <div class="panel-body monster-panel">
     <div class="monster-left">
       <strong>HP: </strong>{{m.max_hp}}
       <strong>Bloodied: </strong>{{m.max_hp//2}}
@@ -37,12 +37,28 @@
       <strong>Perception: </strong>+{{m.perception}}
       <br/>
       {{m.senses}}
-      {% if editable == True %}
-        <br/>
-        <a href="{{url_for('edit_monster',monster_id=m.get_id())}}" class="btn btn-xs btn-primary">Edit</a>
-      {%endif%}
     </div>
   </div>
+  {#add abilities #}
+  <div class="list-group">
+    {% if m.get_traits()|length > 0 %}
+      <div class="list-group-item list-group-item-primary">
+        Traits
+      </div>
+      {% for trait in m.get_traits() %}
+        {{display_action(trait, editable)}}
+      {%endfor%}
+    {%endif%}
+
+  </div>
+  {% if editable == True %}
+  <div class="panel-footer monster-panel">
+    <div class="monster-right">
+      <p>{{build_link("Edit monster",url_for("edit_monster", monster_id=m.get_id()), "btn btn-xs btn-success")}}<p>
+      <p>{{build_link("Add an action",url_for("create_monster_action",monster_id=m.get_id()),"btn btn-xs btn-success")}}</p>
+    </div>
+  </div>
+  {%endif%}
 </div>
 
 {% endmacro %}
