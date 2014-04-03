@@ -7,7 +7,6 @@
 {%- endmacro %}
 
 {% macro display_monster(m, editable=True) %}
-
 <div class="panel panel-primary">
   <div class="panel-heading monster-panel">
     <div class="monster-left">
@@ -42,13 +41,69 @@
   {#add abilities #}
   <div class="list-group">
     {% if m.get_traits()|length > 0 %}
-      <div class="list-group-item list-group-item-primary">
-        Traits
-      </div>
+      <a class="list-group-item active">
+        <strong>Traits</strong>
+      </a>
       {% for trait in m.get_traits() %}
         {{display_action(trait, editable)}}
       {%endfor%}
     {%endif%}
+
+    {% if m.get_standards()|length > 0 %}
+      <a href="#" class="list-group-item active">
+        Standard
+      </a>
+      {% for standard in m.get_standards() %}
+        {{display_action(standard, editable)}}
+      {%endfor%}
+    {%endif%}
+
+    {% if m.get_minors()|length > 0 %}
+      <a href="#" class="list-group-item active">
+        Minor
+      </a>
+      {% for minor in m.get_minors() %}
+        {{display_action(minor, editable)}}
+      {%endfor%}
+    {%endif%}
+
+    {% if m.get_moves()|length > 0 %}
+      <a href="#" class="list-group-item active">
+        Moves
+      </a>
+      {% for move in m.get_moves() %}
+        {{display_action(move, editable)}}
+      {%endfor%}
+    {%endif%}
+
+    {% if m.get_frees()|length > 0 %}
+      <a href="#" class="list-group-item active">
+        Free actions
+      </a>
+      {% for free in m.get_frees() %}
+        {{display_action(free, editable)}}
+      {%endfor%}
+    {%endif%}
+
+    {% if m.get_triggereds()|length > 0 %}
+      <a href="#" class="list-group-item active">
+        Triggered Actions
+      </a>
+      {% for triggered in m.get_triggereds() %}
+        {{display_action(triggered, editable)}}
+      {%endfor%}
+    {%endif%}
+
+    {% if m.get_others()|length > 0 %}
+      <a href="#" class="list-group-item active">
+        Special Actions
+      </a>
+      {% for other in m.get_others() %}
+        {{display_action(other, editable)}}
+      {%endfor%}
+    {%endif%}
+
+
 
   </div>
   {% if editable == True %}
@@ -67,9 +122,30 @@
   {{recharge_string}}
 {% endmacro %}
 
+{% macro display_action_text_block(type, content)%}
+  {%if content|trim %}
+  <p><em>{{type}}: </em>{{content}}</p>
+  {%endif%}
+{%endmacro%}
+
 {% macro display_action(action, editable=True) %}
   <div class="list-group-item list-group-item-info">
-    <strong>action.name</strong>
-    {{ "(%s)"%action.keywords if action.keywords|trim }
-    {{ '<strong><span class="glyph-icon glyph-icon-asterisk"/>%s</strong>'%action.frequency if action.frequency|trim }}
-    {{ display_recharge(action.recharge) }}
+    <strong>{{action.name}}</strong>
+    {{ "(%s)"%action.keywords if action.keywords|trim }}
+    {%if action.frequency|trim %}
+    <strong><span class="glyph-icon glyph-icon-asterisk"/>{{action.frequency}}</strong>
+    {%endif%}
+    {{build_link("Delete Action",url_for("destroy_monster_action",monster_id=action.monster_id, action_id=action.get_id()),"btn btn-danger btn-xs pull-right")}}
+    {{build_link("Edit Action",url_for("edit_monster_action",monster_id=action.monster_id, action_id=action.get_id()),"btn btn-success btn-xs pull-right")}}
+  </div>
+  <div>
+    {{display_action_text_block('Trigger',action.trigger)}}
+    {{display_action_text_block('Attack',action.attack)}}
+    {{display_action_text_block('Secondary Attack',action.secondary_attack)}}
+    {{display_action_text_block('Hit',action.hit)}}
+    {{display_action_text_block('Miss',action.miss)}}
+    {{display_action_text_block('Effect',action.effect)}}
+    {{display_action_text_block('After-Effect',action.after_effect)}}
+    {{display_action_text_block('Special',action.special)}}
+  </div>
+{%endmacro%}

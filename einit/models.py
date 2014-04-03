@@ -423,15 +423,33 @@ class Monster(object):
 
   def get_action_by_id(self, action_id):
     try:
-      action = my_db.session.query(MonsterActionModel).join(MonsterModel).filter(MonsterModel.id == self.monster_model.id).filter(MonsterAction.id == action_id).one()
-      return Monster(self, monster)
+      action = my_db.session.query(MonsterActionModel).join(MonsterModel).filter(MonsterModel.id == self.monster_model.id).filter(MonsterActionModel.id == action_id).one()
+      return MonsterAction(self, action)
     except sqlalchemy.orm.exc.NoResultFound:
       return None
     except sqlalchemy.orm.exc.MultipleResultsFound:
       return None
 
   def get_traits(self):
-    return filter(lambda a:a.category=='Trait',self.monster_model.actions)
+    return map(lambda a: MonsterAction(None,a),filter(lambda a:a.category=='Trait',self.monster_model.actions))
+
+  def get_moves(self):
+    return map(lambda a: MonsterAction(None, a),filter(lambda a:a.category=='Move',self.monster_model.actions))
+
+  def get_standards(self):
+    return map(lambda a: MonsterAction(None, a),filter(lambda a:a.category=='Standard',self.monster_model.actions))
+
+  def get_minors(self):
+    return map(lambda a: MonsterAction(None, a),filter(lambda a:a.category=='Minor',self.monster_model.actions))
+
+  def get_triggereds(self):
+    return map(lambda a: MonsterAction(None, a),filter(lambda a:a.category=='Triggered',self.monster_model.actions))
+
+  def get_frees(self):
+    return map(lambda a: MonsterAction(None, a),filter(lambda a:a.category=='Free',self.monster_model.actions))
+
+  def get_others(self):
+    return map(lambda a: MonsterAction(None, a),filter(lambda a:a.category=='Other',self.monster_model.actions))
 
 
 class MonsterActionModel(my_db.Model):
@@ -444,13 +462,13 @@ class MonsterActionModel(my_db.Model):
   icon = my_db.Column(my_db.String(64))
   name = my_db.Column(my_db.String(64))
   description = my_db.Column(my_db.String(512))
-  requirement = my_db.Column(my_db.String(64))
+  trigger = my_db.Column(my_db.String(256))
   attack = my_db.Column(my_db.String(64))
-  hit = my_db.Column(my_db.String(128))
-  miss = my_db.Column(my_db.String(128))
-  effect = my_db.Column(my_db.String(128))
-  secondary_attack = my_db.Column(my_db.String(128))
-  aftereffect = my_db.Column(my_db.String(128))
+  hit = my_db.Column(my_db.String(256))
+  miss = my_db.Column(my_db.String(256))
+  effect = my_db.Column(my_db.String(256))
+  secondary_attack = my_db.Column(my_db.String(256))
+  aftereffect = my_db.Column(my_db.String(256))
   special = my_db.Column(my_db.String(512))
   keywords = my_db.Column(my_db.String(64))
 
@@ -514,11 +532,11 @@ class MonsterAction(object):
     self.monster_action.description = value
     
   @property
-  def requirement(self):
-    return self.monster_action.requirement
-  @requirement.setter
-  def requirement(self, value):
-    self.monster_action.requirement = value
+  def trigger(self):
+    return self.monster_action.trigger
+  @trigger.setter
+  def trigger(self, value):
+    self.monster_action.trigger = value
     
   @property
   def attack(self):
@@ -576,14 +594,21 @@ class MonsterAction(object):
   def keywords(self, value):
     self.monster_action.keywords = value
     
+  @property
+  def monster_id(self):
+    return self.monster_action.monster_id
+  @monster_id.setter
+  def monster_id(self, value):
+    self.monster_action.monster_id = value
+    
   def save(self):
     my_db.session.add(self.monster_action)
     my_db.session.commit()
 
   def get_id(self):
-    return self.monster_model.id
+    return self.monster_action.id
 
   def destroy(self):
-    my_db.session.delete(self.monster_model)
+    my_db.session.delete(self.monster_action)
     my_db.session.commit()
 

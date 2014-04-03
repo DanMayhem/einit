@@ -278,7 +278,7 @@ def create_monster_action(monster_id):
     ma.name = form.name.data
     ma.keywords = form.keywords.data
     ma.description = form.description.data
-    ma.requirement = form.requirement.data
+    ma.trigger = form.trigger.data
     ma.attack = form.attack.data
     ma.hit = form.hit.data
     ma.miss = form.miss.data
@@ -315,7 +315,7 @@ def edit_monster_action(monster_id, action_id):
     ma.name = form.name.data
     ma.keywords = form.keywords.data
     ma.description = form.description.data
-    ma.requirement = form.requirement.data
+    ma.trigger = form.trigger.data
     ma.attack = form.attack.data
     ma.hit = form.hit.data
     ma.miss = form.miss.data
@@ -327,7 +327,20 @@ def edit_monster_action(monster_id, action_id):
     flask.flash("Monster action updated",'success')
     return flask.redirect(flask.url_for("view_monster",monster_id=m.get_id()))
   else:
-    pass
+    form.category.data = ma.category
+    form.recharge.data = ma.recharge
+    form.frequency.data = ma.frequency
+    form.name.data = ma.name
+    form.keywords.data = ma.keywords
+    form.description.data = ma.description
+    form.trigger.data = ma.trigger
+    form.attack.data = ma.attack
+    form.hit.data = ma.hit
+    form.miss.data = ma.miss
+    form.effect.data = ma.effect
+    form.secondary_attack.data = ma.secondary_attack
+    form.aftereffect.data = ma.aftereffect
+    form.special.data = ma.special
   return flask.render_template("edit_monster_action.html",form=form, monster=monster)
 
 @app.route("/monster/<int:monster_id>/action/<int:action_id>/destroy", methods=['GET','DELETE'])

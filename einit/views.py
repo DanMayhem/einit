@@ -76,7 +76,9 @@ class MonsterActionForm(w.Form):
     ('Move','Move'),
     ('Minor','Minor'),
     ('Standard','Standard'),
-    ('Triggered','Triggered')])
+    ('Triggered','Triggered'),
+    ('Free','Free'),
+    ('Other','Other')])
   #usage = f.SelectField('Usage',choices=[
   #  ('',''),
   #  ('At-Will','At-Will'),
@@ -94,8 +96,8 @@ class MonsterActionForm(w.Form):
   name = f.StringField('Name')
   keywords = f.StringField('Keywords')
   description = f.TextAreaField('Description')
-  requirement = f.StringField('Requirement')
-  attack = f.StringField('Attack', description="e.g. +12 vs AC")
+  trigger = f.StringField('Trigger')
+  attack = f.StringField('Attack', description="e.g. Close Burst 3 (enemies only); +12 vs AC")
   hit = f.StringField("Hit")
   miss = f.StringField("Miss")
   effect = f.StringField("Effect")
