@@ -16,6 +16,7 @@
         />
       </a>
     </div>
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
     <ul class="nav navbar-nav">
       {% if current_user.is_authenticated %}
       <li>{{util.build_link('Heroes',url_for('hero'))}}</li>
@@ -40,6 +41,7 @@
         <li>{{util.build_link('Sign in',url_for('signin'))}}</li>
       {% endif %}
     </ul>
+  </div>
   </div>
 </nav>
 
