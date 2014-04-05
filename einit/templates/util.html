@@ -123,7 +123,7 @@
 {% endmacro %}
 
 {% macro display_action_text_block(type, content)%}
-  {%if content|trim %}
+  {%if content is defined and content|trim %}
   <p><em>{{type}}: </em>{{content}}</p>
   {%endif%}
 {%endmacro%}
@@ -135,10 +135,17 @@
     {%if action.frequency|trim %}
     <strong><span class="glyph-icon glyph-icon-asterisk"/>{{action.frequency}}</strong>
     {%endif%}
+    {%if action.aura_range|trim %}
+    <strong><span class="glyph-icon glyph-icon-asterisk"/> Aura</strong> {{action.aura_range}}
+    {%endif%}
+    {%display_recharge(action.recharge_string)%}
     {{build_link("Delete Action",url_for("destroy_monster_action",monster_id=action.monster_id, action_id=action.get_id()),"btn btn-danger btn-xs pull-right")}}
     {{build_link("Edit Action",url_for("edit_monster_action",monster_id=action.monster_id, action_id=action.get_id()),"btn btn-success btn-xs pull-right")}}
   </div>
   <div>
+    {% if action.trigger|trim %}
+      <p>{{"Trigger(%s): %s"%(action.trigger_usage, action.trigger)}}</p>
+    {%endif%}
     {{display_action_text_block('Trigger',action.trigger)}}
     {{display_action_text_block('Attack',action.attack)}}
     {{display_action_text_block('Secondary Attack',action.secondary_attack)}}
@@ -147,5 +154,6 @@
     {{display_action_text_block('Effect',action.effect)}}
     {{display_action_text_block('After-Effect',action.after_effect)}}
     {{display_action_text_block('Special',action.special)}}
+    <p>{{action.description}}</p>
   </div>
 {%endmacro%}

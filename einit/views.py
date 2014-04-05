@@ -79,6 +79,7 @@ class MonsterActionForm(w.Form):
     ('Triggered','Triggered'),
     ('Free','Free'),
     ('Other','Other')])
+  aura_range = f.StringField('Aura Range', description='for aura traits only')
   #usage = f.SelectField('Usage',choices=[
   #  ('',''),
   #  ('At-Will','At-Will'),
@@ -97,6 +98,13 @@ class MonsterActionForm(w.Form):
   keywords = f.StringField('Keywords')
   description = f.TextAreaField('Description')
   trigger = f.StringField('Trigger')
+  trigger_usage = f.SelectField('Usage',choices=[
+    ('',''),
+    ('Reaction','Reaction'),
+    ('Interrupt','Interrupt'),
+    ('Opportunity','Opportunity'),
+    ('Free','Free')
+    ])
   attack = f.StringField('Attack', description="e.g. Close Burst 3 (enemies only); +12 vs AC")
   hit = f.StringField("Hit")
   miss = f.StringField("Miss")

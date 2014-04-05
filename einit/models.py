@@ -430,6 +430,9 @@ class Monster(object):
     except sqlalchemy.orm.exc.MultipleResultsFound:
       return None
 
+  def get_actions(self):
+    return map(lambda a: MonsterAction(None, a), self.monster_model.actions)
+
   def get_traits(self):
     return map(lambda a: MonsterAction(None,a),filter(lambda a:a.category=='Trait',self.monster_model.actions))
 
@@ -456,6 +459,7 @@ class MonsterActionModel(my_db.Model):
   __tablename__ = 'monster_actions'
   id = my_db.Column(my_db.Integer, primary_key = True)
   category = my_db.Column(my_db.String(64))
+  aura_range = my_db.Column(my_db.String(64))
   usage = my_db.Column(my_db.String(64))
   recharge = my_db.Column(my_db.String(64))
   frequency = my_db.Column(my_db.String(64))
@@ -463,6 +467,7 @@ class MonsterActionModel(my_db.Model):
   name = my_db.Column(my_db.String(64))
   description = my_db.Column(my_db.String(512))
   trigger = my_db.Column(my_db.String(256))
+  trigger_usage = my_db.Column(my_db.String(256))
   attack = my_db.Column(my_db.String(64))
   hit = my_db.Column(my_db.String(256))
   miss = my_db.Column(my_db.String(256))

@@ -273,12 +273,14 @@ def create_monster_action(monster_id):
   if form.validate_on_submit():
     ma = einit.models.MonsterAction(monster)
     ma.category = form.category.data
+    ma.aura_range = form.aura_range.data
     ma.recharge = form.recharge.data
     ma.frequency = form.frequency.data
     ma.name = form.name.data
     ma.keywords = form.keywords.data
     ma.description = form.description.data
     ma.trigger = form.trigger.data
+    ma.trigger_usage = form.trigger_usage.data    
     ma.attack = form.attack.data
     ma.hit = form.hit.data
     ma.miss = form.miss.data
@@ -310,12 +312,14 @@ def edit_monster_action(monster_id, action_id):
     return flask.redirect(flask.url_for('view_monster',monster_id=monster_id))
   if form.validate_on_submit():
     ma.category = form.category.data
+    ma.aura_range = form.aura_range.data
     ma.recharge = form.recharge.data
     ma.frequency = form.frequency.data
     ma.name = form.name.data
     ma.keywords = form.keywords.data
     ma.description = form.description.data
     ma.trigger = form.trigger.data
+    ma.trigger_usage = form.trigger_usage.data
     ma.attack = form.attack.data
     ma.hit = form.hit.data
     ma.miss = form.miss.data
@@ -325,15 +329,17 @@ def edit_monster_action(monster_id, action_id):
     ma.special = form.special.data
     ma.save()
     flask.flash("Monster action updated",'success')
-    return flask.redirect(flask.url_for("view_monster",monster_id=m.get_id()))
+    return flask.redirect(flask.url_for("view_monster",monster_id=monster.get_id()))
   else:
     form.category.data = ma.category
+    form.aura_range.data = ma.aura_range
     form.recharge.data = ma.recharge
     form.frequency.data = ma.frequency
     form.name.data = ma.name
     form.keywords.data = ma.keywords
     form.description.data = ma.description
     form.trigger.data = ma.trigger
+    form.trigger_usage.data = ma.trigger_usage
     form.attack.data = ma.attack
     form.hit.data = ma.hit
     form.miss.data = ma.miss
@@ -341,7 +347,7 @@ def edit_monster_action(monster_id, action_id):
     form.secondary_attack.data = ma.secondary_attack
     form.aftereffect.data = ma.aftereffect
     form.special.data = ma.special
-  return flask.render_template("edit_monster_action.html",form=form, monster=monster)
+  return flask.render_template("edit_monster_action.html",form=form, monster=monster, action=ma)
 
 @app.route("/monster/<int:monster_id>/action/<int:action_id>/destroy", methods=['GET','DELETE'])
 @flask.ext.login.login_required
