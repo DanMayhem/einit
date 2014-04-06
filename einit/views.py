@@ -80,12 +80,6 @@ class MonsterActionForm(w.Form):
     ('Free','Free'),
     ('Other','Other')])
   aura_range = f.StringField('Aura Range', description='for aura traits only')
-  #usage = f.SelectField('Usage',choices=[
-  #  ('',''),
-  #  ('At-Will','At-Will'),
-  #  ('Encounter','Encounter'),
-  #  ('Recharge','Recharge')
-  #  ])
   recharge = f.StringField('Recharge on', description='e.g. 5+ or "when bloodied"')
   frequency = f.SelectField('Usage',choices=[
     ('',''),
@@ -93,7 +87,15 @@ class MonsterActionForm(w.Form):
     ('Encounter','Encounter'),
     ('Recharge','Recharge')
     ])
-  #icon = my_db.Column(my_db.String(64))
+  icon = f.SelectField("Action type", choices=[
+    ('none',''),
+    ('melee','Melee'),
+    ('melee-basic','Basic Melee'),
+    ('ranged','Ranged'),
+    ('ranged-basic','Basic Ranged'),
+    ('close','Close'),
+    ('area','Area')
+    ])
   name = f.StringField('Name')
   keywords = f.StringField('Keywords')
   description = f.TextAreaField('Description')
@@ -101,7 +103,7 @@ class MonsterActionForm(w.Form):
   trigger_usage = f.SelectField('Usage',choices=[
     ('',''),
     ('Reaction','Reaction'),
-    ('Interrupt','Interrupt'),
+    ('Immediate Interrupt','Interrupt'),
     ('Opportunity','Opportunity'),
     ('Free','Free')
     ])
@@ -114,3 +116,7 @@ class MonsterActionForm(w.Form):
   special = f.StringField("Special")
 
   save = f.SubmitField('Save action')
+
+class XmlMonsterForm(w.Form):
+  filename = f.FileField('.monster file')
+  upload = f.SubmitField('Upload monster')

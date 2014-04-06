@@ -11,6 +11,7 @@ import Crypto.Random
 import base64
 import hashlib
 
+
 app = flask.Flask(__name__)
 
 #set debug mode and other config options as appropriate
@@ -36,6 +37,7 @@ login_manager = flask.ext.login.LoginManager(app) #login manager
 import einit.models
 import einit.views
 import einit.user_support
+import einit.xml_support
 
 #register static routes
 @app.route('/')
@@ -188,6 +190,24 @@ def create_monster():
     return flask.redirect(flask.url_for("view_monster",monster_id=m.get_id()))
   return flask.render_template("create_monster.html",form=form)
 
+@app.route("/monster/create_file", methods=['GET','POST'])
+@flask.ext.login.login_required
+def create_monster_file():
+  form = einit.views.XmlMonsterForm()
+  if form.validate_on_submit():
+    try:
+      m = einit.models.Monster(flask.ext.login.current_user)
+      einit.xml_support.monster_from_xml(
+        flask.request.files['filename'].read(),
+        m)
+      flask.flash("Monster Created","success")
+      return flask.redirect(flask.url_for('view_monster',monster_id=m.get_id()))
+    except:
+      if app.config['DEBUG']==True:
+        raise
+      flask.flash("Error processing monster file","danger")
+  return flask.render_template("create_monster_file.html", form=form)
+
 @app.route("/monster/<int:monster_id>", methods=['GET'])
 @flask.ext.login.login_required
 def view_monster(monster_id):
@@ -276,8 +296,8 @@ def create_monster_action(monster_id):
     ma.aura_range = form.aura_range.data
     ma.recharge = form.recharge.data
     ma.frequency = form.frequency.data
+    ma.icon = form.icon.data
     ma.name = form.name.data
-    ma.keywords = form.keywords.data
     ma.description = form.description.data
     ma.trigger = form.trigger.data
     ma.trigger_usage = form.trigger_usage.data    
@@ -288,6 +308,7 @@ def create_monster_action(monster_id):
     ma.secondary_attack = form.secondary_attack.data
     ma.aftereffect = form.aftereffect.data
     ma.special = form.special.data
+    ma.keywords = form.keywords.data
     ma.save()
     flask.flash("Monster action created",'success')
     return flask.redirect(flask.url_for("view_monster",monster_id=monster_id))
@@ -315,8 +336,8 @@ def edit_monster_action(monster_id, action_id):
     ma.aura_range = form.aura_range.data
     ma.recharge = form.recharge.data
     ma.frequency = form.frequency.data
+    ma.icon = form.icon.data
     ma.name = form.name.data
-    ma.keywords = form.keywords.data
     ma.description = form.description.data
     ma.trigger = form.trigger.data
     ma.trigger_usage = form.trigger_usage.data
@@ -327,6 +348,7 @@ def edit_monster_action(monster_id, action_id):
     ma.secondary_attack = form.secondary_attack.data
     ma.aftereffect = form.aftereffect.data
     ma.special = form.special.data
+    ma.keywords = form.keywords.data
     ma.save()
     flask.flash("Monster action updated",'success')
     return flask.redirect(flask.url_for("view_monster",monster_id=monster.get_id()))
@@ -335,8 +357,8 @@ def edit_monster_action(monster_id, action_id):
     form.aura_range.data = ma.aura_range
     form.recharge.data = ma.recharge
     form.frequency.data = ma.frequency
+    form.icon.data = ma.icon
     form.name.data = ma.name
-    form.keywords.data = ma.keywords
     form.description.data = ma.description
     form.trigger.data = ma.trigger
     form.trigger_usage.data = ma.trigger_usage
@@ -347,6 +369,7 @@ def edit_monster_action(monster_id, action_id):
     form.secondary_attack.data = ma.secondary_attack
     form.aftereffect.data = ma.aftereffect
     form.special.data = ma.special
+    form.keywords.data = ma.keywords
   return flask.render_template("edit_monster_action.html",form=form, monster=monster, action=ma)
 
 @app.route("/monster/<int:monster_id>/action/<int:action_id>/destroy", methods=['GET','DELETE'])

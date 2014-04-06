@@ -14,7 +14,7 @@
       <small>{{m.monster_type}}{% if m.keywords|trim %}({{m.keywords}}){% endif %}</small>
     </div>
     <div class="monster-right">
-      <strong>Level:</strong>{{m.level}}{%if m.second_role != 'Standard'%} {{m.second_role}}{%endif%}</br>
+      <strong>Level: </strong>{{m.level}}{%if m.second_role != 'Standard'%} {{m.second_role}}{%endif%}</br>
       <small>{{m.get_xp()}} XP</small>
     </div>
   </div>
@@ -109,9 +109,10 @@
   {% if editable == True %}
   <div class="panel-footer monster-panel">
     <div class="monster-right">
-      <p>{{build_link("Edit monster",url_for("edit_monster", monster_id=m.get_id()), "btn btn-xs btn-success")}}<p>
       <p>{{build_link("Add an action",url_for("create_monster_action",monster_id=m.get_id()),"btn btn-xs btn-success")}}</p>
-    </div>
+      <p>{{build_link("Edit monster",url_for("edit_monster", monster_id=m.get_id()), "btn btn-xs btn-success")}}<p>
+      <p>{{build_link("Delete monster",url_for("destroy_monster", monster_id=m.get_id()), "btn btn-xs btn-danger")}}<p>
+   </div>
   </div>
   {%endif%}
 </div>
@@ -133,20 +134,19 @@
     <strong>{{action.name}}</strong>
     {{ "(%s)"%action.keywords if action.keywords|trim }}
     {%if action.frequency|trim %}
-    <strong><span class="glyph-icon glyph-icon-asterisk"/>{{action.frequency}}</strong>
+    <span class="glyphicon glyphicon-asterisk"> </span> <strong>{{action.frequency}}</strong>
     {%endif%}
     {%if action.aura_range|trim %}
-    <strong><span class="glyph-icon glyph-icon-asterisk"/> Aura</strong> {{action.aura_range}}
+    <span class="glyphicon glyphicon-asterisk"> </span> <strong>Aura</strong> {{action.aura_range}}
     {%endif%}
-    {%display_recharge(action.recharge_string)%}
+    {{display_recharge(action.recharge)}}
     {{build_link("Delete Action",url_for("destroy_monster_action",monster_id=action.monster_id, action_id=action.get_id()),"btn btn-danger btn-xs pull-right")}}
     {{build_link("Edit Action",url_for("edit_monster_action",monster_id=action.monster_id, action_id=action.get_id()),"btn btn-success btn-xs pull-right")}}
   </div>
   <div>
     {% if action.trigger|trim %}
-      <p>{{"Trigger(%s): %s"%(action.trigger_usage, action.trigger)}}</p>
+      <p><em>Trigger ({{action.trigger_usage}}):</em> {{action.trigger}}</p>
     {%endif%}
-    {{display_action_text_block('Trigger',action.trigger)}}
     {{display_action_text_block('Attack',action.attack)}}
     {{display_action_text_block('Secondary Attack',action.secondary_attack)}}
     {{display_action_text_block('Hit',action.hit)}}

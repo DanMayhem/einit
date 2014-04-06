@@ -8,6 +8,9 @@ import flask.ext.login
 
 my_db = einit.db
 
+_xp_by_level = [0,100,125,150,175,200,250,300,350,400,500,600,700,800,1000,1200,1400,1600,2000,2400,2800,3200,4150,5100,6050,7000,9000,11000,13000,15000,19000,23000,27000,31000,39000,47000,55000,63000,79000,95000,111000]
+_role_xp_factor = {"":1,"Standard":1,"Minion":.25,"Elite":2,"Solo":5}
+
 class UserModel(my_db.Model):
   __tablename__ = 'users'
   id = my_db.Column(my_db.Integer, primary_key = True)
@@ -419,7 +422,7 @@ class Monster(object):
     my_db.session.commit()
 
   def get_xp(self):
-    return 100
+    return _xp_by_level[int(self.level)] * _role_xp_factor[self.second_role]
 
   def get_action_by_id(self, action_id):
     try:
@@ -460,7 +463,6 @@ class MonsterActionModel(my_db.Model):
   id = my_db.Column(my_db.Integer, primary_key = True)
   category = my_db.Column(my_db.String(64))
   aura_range = my_db.Column(my_db.String(64))
-  usage = my_db.Column(my_db.String(64))
   recharge = my_db.Column(my_db.String(64))
   frequency = my_db.Column(my_db.String(64))
   icon = my_db.Column(my_db.String(64))
@@ -495,11 +497,11 @@ class MonsterAction(object):
     self.monster_action.category = value
 
   @property
-  def usage(self):
-    return self.monster_action.usage
-  @usage.setter
-  def usage(self, value):
-    self.monster_action.usage = value
+  def aura_range(self):
+    return self.monster_action.aura_range
+  @aura_range.setter
+  def aura_range(self, value):
+    self.monster_action.aura_range = value
     
   @property
   def recharge(self):
@@ -542,6 +544,13 @@ class MonsterAction(object):
   @trigger.setter
   def trigger(self, value):
     self.monster_action.trigger = value
+    
+  @property
+  def trigger_usage(self):
+    return self.monster_action.trigger_usage
+  @trigger_usage.setter
+  def trigger_usage(self, value):
+    self.monster_action.trigger_usage = value
     
   @property
   def attack(self):

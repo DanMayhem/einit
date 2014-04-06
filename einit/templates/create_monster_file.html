@@ -1,0 +1,23 @@
+{% extends "monster.html" %}
+{% block monster_content %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h1 class="panel-title">Create a Monster</h1>
+  </div>
+  <div class="panel-body">
+    {{
+      wtf.quick_form(
+        form,
+        action=url_for('create_monster_file'),
+        enctype="multipart/form-data",
+        button_map = {
+          'upload': 'primary'
+        }
+      )
+    }}
+  </div>
+</div>
+
+{% endblock %}
