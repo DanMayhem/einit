@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% import "util.html" as util %}
+{% block main_content %}
+<div class="row">
+  <div class="col-sm-3 panel">
+    <ul class="nav nav-pills nav-stacked">
+      <!--add list item for each hero-->
+      {% for e in current_user.get_encounters() %}
+      <li
+        {% if encounter is defined %}
+          {% if e.get_id() == encounter.get_id() %}
+            class='active'
+          {%endif%}
+        {%endif%}
+      >
+      <a href="{{url_for('view_encounter',encounter_id=e.get_id())}}">
+        <img src="https://www.gravatar.com/avatar/{{e.get_gravatar_hash()}}?s=30&d=dd" alt="avatar" xheight="35" xwidth="35" class="img-rounded pull-left" />
+        <strong>{{e.name}}</strong><br/>
+      </a></li>
+      {% endfor %}
+      <li>{{util.build_link("Add an encounter",url_for('create_encounter'),"btn btn-success")}}</li>
+    </ul>
+  </div> 
+  <div class="col-sm-8">
+    {% block encounter_content %}
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h1 class="panel-title">Manage your Encounters</h1>
+  </div>
+  <div class="panel-body">
+    {%if current_user.get_encounter_count() == 0 %}
+      <p>
+      To get started, click on the "Add an Encoutner" button. This will
+      enable you to enter data about your encounters and add monsters
+      and heroes to the encounter.
+      </p>
+      <p>
+      {{util.build_link("Add an encounter",url_for('create_encounter'),"btn btn-lg btn-success")}}
+      </p>
+    {%else%}
+      Click on an encounter to the left in order to view and edit that encounter's
+      properties
+    {%endif%}
+  </div>
+</div>
+    {% endblock %}
+  </div>
+</div>
+{% endblock %}

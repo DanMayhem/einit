@@ -389,9 +389,31 @@ def destroy_monster_action(monster_id, action_id):
   return flask.redirect(flask.url_for('view_monster',monster_id=monster_id))
 
 
+##encounter routes
+@app.route("/encounter",methods=['GET'])
+@flask.ext.login.login_required
+def encounter():
+  flask.render_template("encounter.html")
 
+@app.route("/encounter/create",methods=['GET','POST'])
+@flask.ext.login.login_required
+def create_encounter():
+  pass
 
+@app.route("/encounter/<int:encounter_id>", methods=['GET'])
+@flask.ext.login.login_required
+def view_encounter(encounter_id):
+  pass
 
+@app.route("/encounter/<int:encounter_id>/edit", methods=['GET','PUT','PATCH','POST'])
+@flask.ext.login.login_required
+def edit_encounter(encounter_id):
+  pass
+
+@app.route("/encounter/<int:encounter_id>/destroy", methods=['GET','DELETE'])
+@flask.ext.login.login_required
+def destroy_encounter(encounter_id):
+  pass
 
 
 

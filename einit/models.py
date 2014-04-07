@@ -22,6 +22,7 @@ class UserModel(my_db.Model):
 
   heroes = sqlalchemy.orm.relationship("HeroModel")
   monsters = sqlalchemy.orm.relationship("MonsterModel")
+  encounters = sqlalchemy.orm.relationship("EncounterModel")
 
   def __init__(self, name, email, password):
     self.name = name
@@ -82,6 +83,21 @@ class User(flask.ext.login.UserMixin):
     try:
       monster = my_db.session.query(MonsterModel).join(UserModel).filter(UserModel.id == self.u.id).filter(MonsterModel.id == monster_id).one()
       return Monster(self, monster)
+    except sqlalchemy.orm.exc.NoResultFound:
+      return None
+    except sqlalchemy.orm.exc.MultipleResultsFound:
+      return None
+
+  def get_encounters(self):
+    return map(lambda e: Encounter(self, e), self.u.encounters)
+
+  def get_encounter_count(self):
+    return len(self.u.encounters)  
+
+  def get_encounter_by_id(self, encounter_id):
+    try:
+      encounter = my_db.session.query(EncounterModel).join(UserModel).filter(UserModel.id == self.u.id).filter(EncounterModel.id == encounter_id).one()
+      return Encounter(self, encounter)
     except sqlalchemy.orm.exc.NoResultFound:
       return None
     except sqlalchemy.orm.exc.MultipleResultsFound:
@@ -231,6 +247,9 @@ class Hero(object):
   def destroy(self):
     my_db.session.delete(self.hero_model)
     my_db.session.commit()
+
+  def get_xp(self):
+    return _xp_by_level[int(self.level)]
 
 class MonsterModel(my_db.Model):
   __tablename__='monsters'
@@ -626,3 +645,43 @@ class MonsterAction(object):
     my_db.session.delete(self.monster_action)
     my_db.session.commit()
 
+class EncounterModel(my_db.Model):
+  __tablename__ = 'encounters'
+  id = my_db.Column(my_db.Integer, primary_key = True)
+  name = my_db.Column(my_db.String(64))
+  description = my_db.Column(my_db.String(512))
+
+  creator_id = my_db.Column(my_db.Integer,my_db.ForeignKey('users.id'))
+
+class Encounter(object):
+  def __init__(self, u, em=None):
+    if hm is None:
+      self.encounter_model = EncounterModel()
+      self.encounter_model.creator_id = u.get_id()
+    else:
+      self.encounter_model = em
+
+  @property
+  def name(self):
+    return self.encounter_model.name
+  @name.setter
+  def name(self, value):
+    self.encounter_model.name = value
+    
+  @property
+  def description(self):
+    return self.encounter_model.description
+  @description.setter
+  def description(self, value):
+    self.encounter_model.description = value
+    
+  def save(self):
+    my_db.session.add(self.encounter_model)
+    my_db.session.commit()
+
+  def get_id(self):
+    return self.encounter_model.id
+
+  def destroy(self):
+    my_db.session.delete(self.encounter_model)
+    my_db.session.commit()

@@ -21,7 +21,7 @@
       {% if current_user.is_authenticated %}
       <li>{{util.build_link('Heroes',url_for('hero'))}}</li>
       <li>{{util.build_link('Monsters', url_for('monster'))}}</li>
-      <li>{{util.build_link('Encounters')}}</li>
+      <li>{{util.build_link('Encounters', irl_for('encounter'))}}</li>
       {% endif %}
     </ul>
     <ul class="nav navbar-nav navbar-right">

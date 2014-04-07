@@ -120,3 +120,9 @@ class MonsterActionForm(w.Form):
 class XmlMonsterForm(w.Form):
   filename = f.FileField('.monster file')
   upload = f.SubmitField('Upload monster')
+
+class EncounterForm(w.Form):
+  name = f.StringField('Name')
+  description = f.TextAreaField('Description')
+
+  save = f.SubmitField('Save Encounter')
