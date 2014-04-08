@@ -9,9 +9,9 @@ def monster_from_xml(xml_string, monster):
   monster.level = int(root.find("./Level").text)
   monster.second_role = root.find("./GroupRole//Name").text
   monster.monster_type = "%s %s %s"%(
-    root.find("./Size//Name").text,
-    root.find("./Origin//Name").text,
-    root.find("./Type//Name").text
+    root.findtext("./Size//Name",""),
+    root.findtext("./Origin//Name",""),
+    root.findtext("./Type//Name","")
     )
   monster.keywords = ", ".join(map(lambda x: x.text,root.findall("./Keywords//Name")))
   monster.max_hp = int(root.find("./HitPoints").get('FinalValue'))
@@ -117,10 +117,16 @@ def monster_power_from_xml(root, monster):
     temp = root.find("./Attacks/MonsterAttack/AttackBonuses/MonsterPowerAttackNumber")
     if temp is not None:
       temp = temp.get('FinalValue')
-      a.attack= "%s; +%s vs. %s"%(
-        root.findtext("./Attacks/MonsterAttack/Range",""),
-        temp,
-        root.findtext("./Attacks/MonsterAttack/AttackBonuses/MonsterPowerAttackNumber/Defense/ReferencedObject/DefenseName",""))
+      if root.findtext("./Attacks/MonsterAttack/Range","") != "":
+        a.attack= "%s; +%s vs. %s"%(
+          root.findtext("./Attacks/MonsterAttack/Range",""),
+          temp,
+          root.findtext("./Attacks/MonsterAttack/AttackBonuses/MonsterPowerAttackNumber/Defense/ReferencedObject/DefenseName",""))
+      else:
+        a.attack= "+%s vs. %s"%(
+          temp,
+          root.findtext("./Attacks/MonsterAttack/AttackBonuses/MonsterPowerAttackNumber/Defense/ReferencedObject/DefenseName",""))
+
     a.hit= " ".join([root.findtext("./Attacks/MonsterAttack/Hit/Damage/Expression",""),
                      root.findtext("./Attacks/MonsterAttack/Hit/Description","")])
     a.miss= " ".join([root.findtext("./Attacks/MonsterAttack/Miss/Damage/Expression",""),
@@ -146,10 +152,16 @@ def monster_power_from_xml(root, monster):
     temp = root.find("./Attacks/MonsterAttack/AttackBonuses/MonsterPowerAttackNumber")
     if temp is not None:
       temp = temp.get('FinalValue')
-      a.attack= "%s; +%s vs. %s"%(
-        root.findtext("./Attacks/MonsterAttack/Range",""),
-        temp,
-        root.findtext("./Attacks/MonsterAttack/AttackBonuses/MonsterPowerAttackNumber/Defense/ReferencedObject/DefenseName",""))
+      if root.findtext("./Attacks/MonsterAttack/Range","") != "":
+        a.attack= "%s; +%s vs. %s"%(
+          root.findtext("./Attacks/MonsterAttack/Range",""),
+          temp,
+          root.findtext("./Attacks/MonsterAttack/AttackBonuses/MonsterPowerAttackNumber/Defense/ReferencedObject/DefenseName",""))
+      else:
+        a.attack= "+%s vs. %s"%(
+          temp,
+          root.findtext("./Attacks/MonsterAttack/AttackBonuses/MonsterPowerAttackNumber/Defense/ReferencedObject/DefenseName",""))
+
     a.hit= " ".join([root.findtext("./Attacks/MonsterAttack/Hit/Damage/Expression",""),
                      root.findtext("./Attacks/MonsterAttack/Hit/Description","")])
     a.miss= " ".join([root.findtext("./Attacks/MonsterAttack/Miss/Damage/Expression",""),
@@ -173,12 +185,19 @@ def monster_power_from_xml(root, monster):
     a.trigger_usage = ""
     a.attack = ""
     temp = root.find("./Attacks/MonsterAttack/AttackBonuses/MonsterPowerAttackNumber")
+    temp = root.find("./Attacks/MonsterAttack/AttackBonuses/MonsterPowerAttackNumber")
     if temp is not None:
       temp = temp.get('FinalValue')
-      a.attack= "%s; +%s vs. %s"%(
-        root.findtext("./Attacks/MonsterAttack/Range",""),
-        temp,
-        root.findtext("./Attacks/MonsterAttack/AttackBonuses/MonsterPowerAttackNumber/Defense/ReferencedObject/DefenseName",""))
+      if root.findtext("./Attacks/MonsterAttack/Range","") != "":
+        a.attack= "%s; +%s vs. %s"%(
+          root.findtext("./Attacks/MonsterAttack/Range",""),
+          temp,
+          root.findtext("./Attacks/MonsterAttack/AttackBonuses/MonsterPowerAttackNumber/Defense/ReferencedObject/DefenseName",""))
+      else:
+        a.attack= "+%s vs. %s"%(
+          temp,
+          root.findtext("./Attacks/MonsterAttack/AttackBonuses/MonsterPowerAttackNumber/Defense/ReferencedObject/DefenseName",""))
+
     a.hit= " ".join([root.findtext("./Attacks/MonsterAttack/Hit/Damage/Expression",""),
                      root.findtext("./Attacks/MonsterAttack/Hit/Description","")])
     a.miss= " ".join([root.findtext("./Attacks/MonsterAttack/Miss/Damage/Expression",""),

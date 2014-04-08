@@ -393,17 +393,31 @@ def destroy_monster_action(monster_id, action_id):
 @app.route("/encounter",methods=['GET'])
 @flask.ext.login.login_required
 def encounter():
-  flask.render_template("encounter.html")
+  return flask.render_template("encounter.html")
 
 @app.route("/encounter/create",methods=['GET','POST'])
 @flask.ext.login.login_required
 def create_encounter():
-  pass
+  form = einit.views.EncounterForm()
+  if form.validate_on_submit():
+    m = einit.models.Encounter(flask.ext.login.current_user)
+    m.name = form.name.data
+    m.description = form.description.data
+    m.save()
+    flask.flash("Encounter created",'success')
+    return flask.redirect(flask.url_for("view_encounter",encounter_id=m.get_id()))
+  return flask.render_template("create_encounter.html",form=form)
+
 
 @app.route("/encounter/<int:encounter_id>", methods=['GET'])
 @flask.ext.login.login_required
 def view_encounter(encounter_id):
-  pass
+  e = flask.ext.login.current_user.get_encounter_by_id(encounter_id)
+  if e is None:
+    flask.flash('Unable to find encounter','warning')
+    return flask.redirect(flask.url_for('index'))
+  return flask.render_template("view_encounter.html",encounter=e)
+
 
 @app.route("/encounter/<int:encounter_id>/edit", methods=['GET','PUT','PATCH','POST'])
 @flask.ext.login.login_required
@@ -413,7 +427,13 @@ def edit_encounter(encounter_id):
 @app.route("/encounter/<int:encounter_id>/destroy", methods=['GET','DELETE'])
 @flask.ext.login.login_required
 def destroy_encounter(encounter_id):
-  pass
+  e = flask.ext.login.current_user.get_encounter_by_id(encounter_id)
+  if e is None:
+    flask.flash('Unable to find encounter','warning')
+    return flask.redirect(flask.url_for('index'))
+  flask.flash('Encounter %s deleted forever'%(e.name),'danger')
+  e.destroy()
+  return flask.render_template("encounter.html")
 
 
 

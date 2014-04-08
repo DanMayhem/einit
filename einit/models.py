@@ -655,7 +655,7 @@ class EncounterModel(my_db.Model):
 
 class Encounter(object):
   def __init__(self, u, em=None):
-    if hm is None:
+    if em is None:
       self.encounter_model = EncounterModel()
       self.encounter_model.creator_id = u.get_id()
     else:
@@ -685,3 +685,7 @@ class Encounter(object):
   def destroy(self):
     my_db.session.delete(self.encounter_model)
     my_db.session.commit()
+
+  def get_gravatar_hash(self):
+    return hashlib.md5(self.encounter_model.name).hexdigest()
+

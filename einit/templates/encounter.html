@@ -14,7 +14,7 @@
         {%endif%}
       >
       <a href="{{url_for('view_encounter',encounter_id=e.get_id())}}">
-        <img src="https://www.gravatar.com/avatar/{{e.get_gravatar_hash()}}?s=30&d=dd" alt="avatar" xheight="35" xwidth="35" class="img-rounded pull-left" />
+        <img src="https://www.gravatar.com/avatar/{{e.get_gravatar_hash()}}?s=30&d=identicon" alt="avatar" class="img-rounded" />
         <strong>{{e.name}}</strong><br/>
       </a></li>
       {% endfor %}
@@ -30,7 +30,7 @@
   <div class="panel-body">
     {%if current_user.get_encounter_count() == 0 %}
       <p>
-      To get started, click on the "Add an Encoutner" button. This will
+      To get started, click on the "Add an Encounter" button. This will
       enable you to enter data about your encounters and add monsters
       and heroes to the encounter.
       </p>

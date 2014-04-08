@@ -6,7 +6,7 @@
 <div class="panel panel-default">
   <div class="panel-heading">
     <h1 class="panel-title">
-      {{util.gravatar_small(hero)}}
+      <img src="https://www.gravatar.com/avatar/{{hero.get_gravatar_hash()}}?s=50&d=wavatar" alt="avatar" class="img-rounded" />
       Edit {{hero.hero_name}}
     </h1>
   </div>
