@@ -1,0 +1,64 @@
+{% extends "encounter.html" %}
+{% import 'bootstrap/wtf.html' as wtf %}
+{% import "util.html" as util %}
+
+{% block encounter_content %}
+<div class="panel panel-primary">
+  <div class="panel-heading">
+    <img src="https://www.gravatar.com/avatar/{{encounter.get_gravatar_hash()}}?s=30&d=identicon" alt="avatar"class="img-rounded pull-left" />
+    <strong>{{encounter.name}}</strong>
+  </div>
+  <div class="panel-body">
+    <div>
+      <small>{{encounter.description}}</small>
+      <p><strong>Party level: </strong>{{encounter.get_party_level()}}</p>
+      <p><strong>Encounter level: </strong>{{encounter.get_encounter_level()}}</p>
+      <p><strong>Difficulty: </strong>{{encounter.get_difficulty()}}</p>
+    </div>
+    <row>
+      <div class="col-sm-5 col-sm-offset-1">
+        <div class="panel panel-info">
+          <div class="panel-heading">
+            <strong>Available</strong>
+          </div>
+          <div class="panel-body">
+            <div class="list-group">
+              {% for a in available_actors %}
+                <a href="{{url_for(add_callback, encounter_id=encounter.get_id(), actor_id=a.get_id())}}" class="list-group-item">
+                  <img src="{{a.get_gravatar_url()}}" width="30" height="30" class="img-rounded"/>
+                  {{a.get_display_name()}}
+                  <span class="glyphicon glyphicon-arrow-right"> </span>
+                </a>
+              {%endfor%}
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-5">
+        <div class="panel panel-info">
+          <div class="panel-heading">
+            <strong>Used</strong>
+          </div>
+          <div class="panel-body">
+            <div class="list-group">
+              {% for a in encounter_actors %}
+                <a href="{{url_for(del_callback, encounter_id=encounter.get_id(), actor_id=a.get_id())}}" class="list-group-item">
+                  <span class="glyphicon glyphicon-arrow-left"> </span>
+                  <img src="{{a.get_gravatar_url()}}" width="30" height="30" class="img-rounded"/>
+                  {{a.get_display_name()}}
+                  {% if encounter.get_actor_spawn_count(a)|int > 1 %}
+                    <span class="badge pull-right">{{encounter.get_actor_spawn_count(a)}}</span>
+                    {%endif%}
+                </a>
+              {%endfor%}
+          </div>
+        </div>
+      </div>
+    </row>
+  </div>
+</div>
+  <div class="panel-footer">
+    {{util.build_link("Return to encounter",url_for("view_encounter",encounter_id=encounter.get_id()),"btn btn-lg btn-primary")}}
+  </div>
+
+{% endblock %}

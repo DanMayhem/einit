@@ -448,6 +448,100 @@ def destroy_encounter(encounter_id):
   e.destroy()
   return flask.render_template("encounter.html")
 
+@app.route("/encounter/<int:encounter_id>/add/hero",methods=['GET'])
+@flask.ext.login.login_required
+def encounter_hero_list(encounter_id):
+  e = flask.ext.login.current_user.get_encounter_by_id(encounter_id)
+  if e is None:
+    flask.flash("Unable to find encounter",'warning')
+    return flask.redirect(flask.url_for('index'))
+  encounter_heroes = e.get_heroes()
+  available_heroes = filter(lambda h: h.get_id() not in map(lambda x: x.get_id(),encounter_heroes), flask.ext.login.current_user.get_heroes())
+  return flask.render_template("view_actor_list.html",
+    available_actors=available_heroes,
+    encounter_actors=encounter_heroes,
+    encounter=e,
+    add_callback='encounter_hero_add',
+    del_callback='encounter_hero_del'
+    )
+
+@app.route('/encounter/<int:encounter_id>/hero/add/<int:actor_id>', methods=['GET','POST'])
+@flask.ext.login.login_required
+def encounter_hero_add(encounter_id, actor_id):
+  hero = flask.ext.login.current_user.get_hero_by_id(actor_id)
+  if hero is None:
+    flask.flash("Unable to find hero",'warning')
+    return flask.redirect(flask.url_for('encounter_hero_list',encounter_id=encounter_id))
+  encounter = flask.ext.login.current_user.get_encounter_by_id(encounter_id)
+  if encounter is None:
+    flask.flash("Unable to find encounter",'warning')
+    return flask.redirect(flask.url_for('index'))
+  encounter.add_hero(hero)
+  flask.flash("Added %s"%hero.hero_name,'success')
+  return flask.redirect(flask.url_for('encounter_hero_list',encounter_id=encounter_id))
+
+@app.route('/encounter/<int:encounter_id>/hero/del/<int:actor_id>', methods=['GET','POST'])
+@flask.ext.login.login_required
+def encounter_hero_del(encounter_id, actor_id):
+  hero = flask.ext.login.current_user.get_hero_by_id(actor_id)
+  if hero is None:
+    flask.flash("Unable to find hero",'warning')
+    return flask.redirect(flask.url_for('encounter_hero_list',encounter_id=encounter_id))
+  encounter = flask.ext.login.current_user.get_encounter_by_id(encounter_id)
+  if encounter is None:
+    flask.flash("Unable to find encounter",'warning')
+    return flask.redirect(flask.url_for('index'))
+  encounter.remove_hero(hero)
+  flask.flash("Removed %s"%hero.hero_name,"danger")
+  return flask.redirect(flask.url_for('encounter_hero_list',encounter_id=encounter_id))
+
+@app.route("/encounter/<int:encounter_id>/add/monster",methods=['GET'])
+@flask.ext.login.login_required
+def encounter_monster_list(encounter_id):
+  e = flask.ext.login.current_user.get_encounter_by_id(encounter_id)
+  if e is None:
+    flask.flash("Unable to find encounter",'warning')
+    return flask.redirect(flask.url_for('index'))
+  encounter_monsters = e.get_monsters()
+  available_monsters = flask.ext.login.current_user.get_monsters()
+  return flask.render_template("view_actor_list.html",
+    available_actors=available_monsters,
+    encounter_actors=encounter_monsters,
+    encounter=e,
+    add_callback='encounter_monster_add',
+    del_callback='encounter_monster_del'
+    )
+
+@app.route('/encounter/<int:encounter_id>/monster/add/<int:actor_id>', methods=['GET','POST'])
+@flask.ext.login.login_required
+def encounter_monster_add(encounter_id, actor_id):
+  monster = flask.ext.login.current_user.get_monster_by_id(actor_id)
+  if monster is None:
+    flask.flash("Unable to find monster",'warning')
+    return flask.redirect(flask.url_for('encounter_monster_list',encounter_id=encounter_id))
+  encounter = flask.ext.login.current_user.get_encounter_by_id(encounter_id)
+  if encounter is None:
+    flask.flash("Unable to find encounter",'warning')
+    return flask.redirect(flask.url_for('index'))
+  encounter.add_monster(monster)
+  flask.flash("Added %s"%monster.name,'success')
+  return flask.redirect(flask.url_for('encounter_monster_list',encounter_id=encounter_id))
+
+@app.route('/encounter/<int:encounter_id>/monster/del/<int:actor_id>', methods=['GET','POST'])
+@flask.ext.login.login_required
+def encounter_monster_del(encounter_id, actor_id):
+  monster = flask.ext.login.current_user.get_monster_by_id(actor_id)
+  if monster is None:
+    flask.flash("Unable to find monster",'warning')
+    return flask.redirect(flask.url_for('encounter_monster_list',encounter_id=encounter_id))
+  encounter = flask.ext.login.current_user.get_encounter_by_id(encounter_id)
+  if encounter is None:
+    flask.flash("Unable to find encounter",'warning')
+    return flask.redirect(flask.url_for('index'))
+  encounter.remove_actor(monster)
+  flask.flash("Removed %s"%monster.name,"danger")
+  return flask.redirect(flask.url_for('encounter_monster_list',encounter_id=encounter_id))
+
 
 
 

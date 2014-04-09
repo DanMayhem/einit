@@ -8,6 +8,7 @@ import flask.ext.login
 
 my_db = einit.db
 
+_max_level = 40
 _xp_by_level = [0,100,125,150,175,200,250,300,350,400,500,600,700,800,1000,1200,1400,1600,2000,2400,2800,3200,4150,5100,6050,7000,9000,11000,13000,15000,19000,23000,27000,31000,39000,47000,55000,63000,79000,95000,111000]
 _role_xp_factor = {"":1,"Standard":1,"Minion":.25,"Elite":2,"Solo":5}
 
@@ -59,7 +60,7 @@ class User(flask.ext.login.UserMixin):
     return einit.bcrypt.check_password_hash(self.u.password_digest,password)
 
   def get_heroes(self):
-    return map(lambda h: Hero(self, h), self.u.heroes)
+    return sorted(map(lambda h: Hero(self, h), self.u.heroes),key=lambda h:h.hero_name)
 
   def get_hero_count(self):
     return len(self.u.heroes)  
@@ -89,7 +90,7 @@ class User(flask.ext.login.UserMixin):
       return None
 
   def get_encounters(self):
-    return map(lambda e: Encounter(self, e), self.u.encounters)
+    return sorted(map(lambda e: Encounter(self, e), self.u.encounters), key=lambda x: x.name)
 
   def get_encounter_count(self):
     return len(self.u.encounters)  
@@ -180,6 +181,28 @@ class AnonymousUser(User):
   def get_name(self):
     return 'Anonymous'
 
+class Actor(object):
+  def get_category(self):
+    return None
+
+  def get_gravatar_url(self):
+    return 'https://www.gravatar.com/avatar/%s'%self.get_gravatar_hash()
+
+  def get_gravatar_hash(self):
+    return hashlib.md5(self.get_display_name()).hexdigest()
+
+  def get_max_hp(self):
+    return 0
+
+  def get_display_name(self):
+    return ""
+
+  def get_level(self):
+    return 0
+
+  def get_xp(self):
+    return _xp_by_level[self.get_level()]
+
 class HeroModel(my_db.Model):
   __tablename__='heroes'
   id = my_db.Column(my_db.Integer, primary_key = True)
@@ -191,7 +214,7 @@ class HeroModel(my_db.Model):
 
   creator_id = my_db.Column(my_db.Integer,my_db.ForeignKey('users.id'))
 
-class Hero(object):
+class Hero(Actor):
   def __init__(self, u, hm=None):
     if hm is None:
       self.hero_model = HeroModel()
@@ -241,6 +264,12 @@ class Hero(object):
   def get_id(self):
     return self.hero_model.id
 
+  def get_gravatar_url(self):
+    return "%s?d=wavatar"%super(Hero,self).get_gravatar_url()
+
+  def get_display_name(self):
+    return self.hero_model.hero_name
+
   def get_gravatar_hash(self):
     return hashlib.md5(self.hero_model.player_name).hexdigest()
 
@@ -250,6 +279,19 @@ class Hero(object):
 
   def get_xp(self):
     return _xp_by_level[int(self.level)]
+
+  def get_category(self):
+    return 'hero'
+
+  def get_max_hp(self):
+    return self.max_hp
+
+  def get_display_name(self):
+    return self.hero_name
+
+  def get_level(self):
+    return self.level
+
 
 class MonsterModel(my_db.Model):
   __tablename__='monsters'
@@ -278,7 +320,7 @@ class MonsterModel(my_db.Model):
 
   creator_id = my_db.Column(my_db.Integer,my_db.ForeignKey('users.id'))
 
-class Monster(object):
+class Monster(Actor):
   def __init__(self, u, mm=None):
     if mm is None:
       self.monster_model = MonsterModel()
@@ -476,6 +518,20 @@ class Monster(object):
   def get_others(self):
     return map(lambda a: MonsterAction(None, a),filter(lambda a:a.category=='Other',self.monster_model.actions))
 
+  def get_category(self):
+    return 'monster'
+
+  def get_gravatar_url(self):
+    return '%s?d=monsterid'%(super(Monster,self).get_gravatar_url())
+
+  def get_max_hp(self):
+    return self.max_hp
+
+  def get_display_name(self):
+    return self.name
+
+  def get_level(self):
+    return level
 
 class MonsterActionModel(my_db.Model):
   __tablename__ = 'monster_actions'
@@ -650,6 +706,7 @@ class EncounterModel(my_db.Model):
   id = my_db.Column(my_db.Integer, primary_key = True)
   name = my_db.Column(my_db.String(64))
   description = my_db.Column(my_db.String(512))
+  actors = sqlalchemy.orm.relationship("ActorModel")
 
   creator_id = my_db.Column(my_db.Integer,my_db.ForeignKey('users.id'))
 
@@ -688,4 +745,107 @@ class Encounter(object):
 
   def get_gravatar_hash(self):
     return hashlib.md5(self.encounter_model.name).hexdigest()
+
+  def get_party_level(self):
+    xp = 0
+    for h in self.get_heroes():
+      xp += h.get_xp()
+    level = 0
+    xp = xp/5
+    while level < _max_level and _xp_by_level[level] < xp:
+      level += 1
+    return level
+
+  def get_encounter_level(self):
+    xp = 0
+    for m in self.get_monsters():
+      xp += m.get_xp() * self.get_actor_spawn_count(m)
+    level = 0
+    xp /= 5
+    while level < _max_level and _xp_by_level[level] < xp:
+      level += 1
+    return level
+
+  def get_difficulty(self):
+    diff = self.get_encounter_level() - self.get_party_level()
+    if diff < -2:
+      return 'Too easy'
+    elif diff < 0:
+      return 'Easy'
+    elif diff < 2:
+      return 'Just right'
+    elif diff < 4:
+      return 'Hard'
+    return 'Very hard'
+
+  def get_heroes(self):
+    my_user = User.get_user_by_id(self.encounter_model.creator_id)
+    return sorted(
+      map(lambda h: my_user.get_hero_by_id(h.reference_id),
+        filter(lambda a:a.category=='hero',self.encounter_model.actors)),
+      key=lambda x: x.hero_name
+    )
+
+  def get_monsters(self):
+    my_user = User.get_user_by_id(self.encounter_model.creator_id)
+    return sorted(
+      map(lambda h: my_user.get_monster_by_id(h.reference_id),
+        filter(lambda a:a.category=='monster',self.encounter_model.actors)),
+      key=lambda x: x.name
+    )
+
+  def find_actor(self, category, actor_id):
+    actor = None
+    for am in self.encounter_model.actors:
+      if am.category == category and am.reference_id == actor_id:
+        actor=am
+    return actor
+
+  def get_actor_spawn_count(self, actor):
+    am = self.find_actor(actor.get_category(), actor.get_id())
+    if am is not None:
+      return am.spawn_count
+    return 0
+
+  def add_hero(self, h):
+    self.add_actor(h)
+
+  def add_monster(self, m):
+    self.add_actor(m)
+
+  def add_actor(self, actor):
+    am = self.find_actor(actor.get_category(),actor.get_id())
+    if am is None:
+      am = ActorModel()
+      am.spawn_count = 0
+    am.category=actor.get_category()
+    am.reference_id = actor.get_id()
+    am.spawn_count += 1
+    am.initiative = None
+    am.encounter_id = self.encounter_model.id
+    my_db.session.add(am)
+    my_db.session.commit()
+
+  def remove_hero(self, h):
+    self.remove_actor(h)
+
+  def remove_actor(self, a):
+    am = self.find_actor(a.get_category(), a.get_id())
+    if am is not None:
+      am.spawn_count -= 1
+      if am.spawn_count <=0:
+        my_db.session.delete(am)
+      else:
+        my_db.session.add(am)
+      my_db.session.commit()
+
+class ActorModel(my_db.Model):
+  __tablename__ = 'actors'
+  id = my_db.Column(my_db.Integer, primary_key = True)
+  category = my_db.Column(my_db.String(64))
+  reference_id = my_db.Column(my_db.Integer)
+  spawn_count = my_db.Column(my_db.Integer)
+  initiative = my_db.Column(my_db.Integer)
+
+  encounter_id = my_db.Column(my_db.Integer,my_db.ForeignKey('encounters.id'))
 

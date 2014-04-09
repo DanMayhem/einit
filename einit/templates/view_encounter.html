@@ -5,6 +5,7 @@
 {% block encounter_content %}
 <div class="panel panel-primary">
   <div class="panel-heading">
+    <img src="https://www.gravatar.com/avatar/{{encounter.get_gravatar_hash()}}?s=30&d=identicon" alt="avatar"class="img-rounded pull-left" />
     <strong>{{encounter.name}}</strong>
   </div>
   <div class="panel-body">
@@ -17,10 +18,16 @@
           <div class="panel-heading">
             <strong>Heroes</strong>
           </div>
-          <div class="panel-body">
-          </div>
+          <ul class="list-group">
+          {% for h in encounter.get_heroes() %}
+            <li class="list-group-item">
+              <img src="{{h.get_gravatar_url()}}" width="30" height="30" class="img-rounded"/>
+              {{h.get_display_name()}}
+            </li>
+          {%endfor%}
+          </ul>
           <div class="panel-footer monster-panel">
-            {{util.build_link("Add a hero","#","btn btn-success btn-xs center")}}
+            {{util.build_link("Edit heros",url_for('encounter_hero_list',encounter_id=encounter.get_id()),"btn btn-primary btn-xs")}}
           </div>
         </div>
       </div>
@@ -29,10 +36,17 @@
           <div class="panel-heading">
             <strong>Monsters</strong>
           </div>
-          <div class="panel-body">
-          </div>
+          <ul class="list-group">
+          {% for m in encounter.get_monsters() %}
+            <li class="list-group-item">
+              <img src="{{m.get_gravatar_url()}}" width="30" height="30" class="img-rounded"/>
+              {{m.get_display_name()}}
+              <span class="badge">{{encounter.get_actor_spawn_count(m)}}</span>
+            </li>
+          {%endfor%}
+          </ul>
           <div class="panel-footer monster-panel">
-            {{util.build_link("Add a monster","#","btn btn-success btn-xs center")}}
+            {{util.build_link("Edit monsters",url_for('encounter_monster_list',encounter_id=encounter.get_id()),"btn btn-primary btn-xs")}}
           </div>
         </div>
       </div>
