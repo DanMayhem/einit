@@ -422,7 +422,20 @@ def view_encounter(encounter_id):
 @app.route("/encounter/<int:encounter_id>/edit", methods=['GET','PUT','PATCH','POST'])
 @flask.ext.login.login_required
 def edit_encounter(encounter_id):
-  pass
+  form = einit.views.EncounterForm()
+  encounter = flask.ext.login.current_user.get_encounter_by_id(encounter_id)
+  if hero is None:
+    flask.flash('Unable to find encounter','warning')
+    flask.redirect(flask.url_for('index'))
+  if form.validate_on_submit():
+    encounter.name = form.name.data
+    encounter.description = form.description.data
+    encounter.save()
+    flask.flash("%s updated"%(encounter.name),'success')
+  else:
+    form.name.data = encounter.name
+    form.description.data = encounter.description
+  return flask.render_template("edit_encounter.html",form=form, encounter=encounter)
 
 @app.route("/encounter/<int:encounter_id>/destroy", methods=['GET','DELETE'])
 @flask.ext.login.login_required

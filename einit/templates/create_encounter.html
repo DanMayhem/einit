@@ -1,0 +1,22 @@
+{% extends "encounter.html" %}
+{% block encounter_content %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h1 class="panel-title">Create an Encounter</h1>
+  </div>
+  <div class="panel-body">
+    {{
+      wtf.quick_form(
+        form,
+        action=url_for('create_encounter'),
+        button_map = {
+          'save': 'primary'
+        }
+      )
+    }}
+  </div>
+</div>
+
+{% endblock %}
