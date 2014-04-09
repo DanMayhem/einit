@@ -274,6 +274,8 @@ class Hero(Actor):
     return hashlib.md5(self.hero_model.player_name).hexdigest()
 
   def destroy(self):
+    for e in User.get_user_by_id(self.hero_model.creator_id).get_encounters():
+      e.remove_actor(self)
     my_db.session.delete(self.hero_model)
     my_db.session.commit()
 
@@ -479,6 +481,8 @@ class Monster(Actor):
     return hashlib.md5(self.monster_model.name).hexdigest()
 
   def destroy(self):
+    for e in User.get_user_by_id(self.monster_model.creator_id).get_encounters():
+      e.remove_actor(self)
     my_db.session.delete(self.monster_model)
     my_db.session.commit()
 

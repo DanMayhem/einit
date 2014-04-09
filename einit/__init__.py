@@ -448,7 +448,7 @@ def destroy_encounter(encounter_id):
   e.destroy()
   return flask.render_template("encounter.html")
 
-@app.route("/encounter/<int:encounter_id>/add/hero",methods=['GET'])
+@app.route("/encounter/<int:encounter_id>/hero",methods=['GET'])
 @flask.ext.login.login_required
 def encounter_hero_list(encounter_id):
   e = flask.ext.login.current_user.get_encounter_by_id(encounter_id)
@@ -495,7 +495,7 @@ def encounter_hero_del(encounter_id, actor_id):
   flask.flash("Removed %s"%hero.hero_name,"danger")
   return flask.redirect(flask.url_for('encounter_hero_list',encounter_id=encounter_id))
 
-@app.route("/encounter/<int:encounter_id>/add/monster",methods=['GET'])
+@app.route("/encounter/<int:encounter_id>/monster",methods=['GET'])
 @flask.ext.login.login_required
 def encounter_monster_list(encounter_id):
   e = flask.ext.login.current_user.get_encounter_by_id(encounter_id)
@@ -542,7 +542,10 @@ def encounter_monster_del(encounter_id, actor_id):
   flask.flash("Removed %s"%monster.name,"danger")
   return flask.redirect(flask.url_for('encounter_monster_list',encounter_id=encounter_id))
 
-
+@app.route('/encounter/<int:encounter_id>/event',methods=['GET'])
+@flask.ext.login.login_required
+def encounter_event_list(encounter_id):
+  pass
 
 
 
