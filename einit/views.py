@@ -125,4 +125,10 @@ class EncounterForm(w.Form):
   name = f.StringField('Name')
   description = f.TextAreaField('Description')
 
-  save = f.SubmitField('Save Encounter')
+  save = f.SubmitField('Save encounter')
+
+class EncounterEventForm(w.Form):
+  name = f.StringField('Name')
+  description = f.TextAreaField('Description')
+
+  save = f.SubmitField('Add event')

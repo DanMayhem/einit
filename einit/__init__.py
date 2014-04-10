@@ -545,8 +545,41 @@ def encounter_monster_del(encounter_id, actor_id):
 @app.route('/encounter/<int:encounter_id>/event',methods=['GET'])
 @flask.ext.login.login_required
 def encounter_event_list(encounter_id):
-  pass
+  encounter = flask.ext.login.current_user.get_encounter_by_id(encounter_id)
+  if encounter is None:
+    flask.flash("Unable to find encounter","warning")
+    return flask.redirect(flask.url_for('index'))
+  event_form = einit.views.EncounterEventForm()
+  return flask.render_template("view_encounter_event_list.html",encounter=encounter, event_form=event_form)
 
+@app.route('/encounter/<int:encounter_id>/event/add',methods=['GET','POST'])
+@flask.ext.login.login_required
+def encounter_event_add(encounter_id):
+  encounter = flask.ext.login.current_user.get_encounter_by_id(encounter_id)
+  if encounter is None:
+    flask.flash("Unable to find encounter","warning")
+    return flask.redirect(flask.url_for('index'))
+  form = einit.views.EncounterEventForm()
+  if form.validate_on_submit():
+    flask.flash("%s event added",form.name.data)
+    encounter.add_event(form.name.data, form.description.data)
+  return flask.redirect(flask.url_for('encounter_event_list',encounter_id=encounter.get_id()))
+
+@app.route('/encounter/<int:encounter_id>/event/<int:event_id>/destroy',methods=['GET','DELETE'])
+@flask.ext.login.login_required
+def encounter_event_del(encounter_id, event_id):
+  encounter = flask.ext.login.current_user.get_encounter_by_id(encounter_id)
+  if encounter is None:
+    flask.flash("Unable to find encounter","warning")
+    return flask.redirect(flask.url_for('index'))
+  event = encounter.get_event_by_id(event_id)
+  if event is None:
+    flask.flash("Unable to find event","warning")
+  else:
+    flask.flash("%s event deleted forever"%event.name, 'danger')
+    event.destroy()
+  return flask.redirect(flask.url_for('encounter_event_list',encounter_id=encounter_id))
+  
 
 
 

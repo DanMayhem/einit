@@ -1,0 +1,58 @@
+{% extends "encounter.html" %}
+{% import 'bootstrap/wtf.html' as wtf %}
+{% import "util.html" as util %}
+
+{% block encounter_content %}
+<div class="panel panel-primary">
+  <div class="panel-heading">
+    <img src="https://www.gravatar.com/avatar/{{encounter.get_gravatar_hash()}}?s=30&d=identicon" alt="avatar"class="img-rounded pull-left" />
+    <strong>{{encounter.name}}</strong>
+  </div>
+  <div class="panel-body">
+    <div>
+      <p><small>{{encounter.description}}</small></p>
+      <p><strong>Party level: </strong>{{encounter.get_party_level()}}</p>
+      <p><strong>Encounter level: </strong>{{encounter.get_encounter_level()}}</p>
+      <p><strong>Difficulty: </strong>{{encounter.get_difficulty()}}</p>
+    </div>
+    <row>
+      <div class="col-sm-8 col-sm-offset-2">
+        <div class="panel panel-info">
+          <div class="panel-heading">
+            <strong>Events</strong>
+          </div>
+          <div class="panel-body">
+            <ul class="list-group">
+              {% for e in encounter.get_events() %}
+                <li class="list-group-item">
+                  <a href="{{url_for('encounter_event_del',encounter_id=encounter.get_id(), event_id=e.get_id())}}" class="btn btn-xs btn-danger pull-right">
+                    <span class="glyphicon glyphicon-trash pull-right"> </span>
+                  </a>
+                  <strong>{{e.name}}</strong>
+                  <p><small>{{e.description}}</small></p>
+
+                </li>
+              {%endfor%}
+              <li class="list-group-item">
+              {{
+                wtf.quick_form(
+                  event_form,
+                  action=url_for('encounter_event_add',encounter_id=encounter.get_id()),
+                  button_map = {
+                    'save': 'primary'
+                  }
+                )
+              }}
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </row>
+  </div>
+  <div class="panel-footer">
+    {{util.build_link("Return to encounter",url_for("view_encounter",encounter_id=encounter.get_id()),"btn btn-lg btn-primary")}}
+  </div>
+</div>
+
+{% endblock %}

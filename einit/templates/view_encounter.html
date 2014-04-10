@@ -58,10 +58,15 @@
           <div class="panel-heading">
             <strong>Events</strong>
           </div>
-          <div class="panel-body">
-          </div>
+          <ul class="list-group">
+            {% for e in encounter.get_events() %}
+              <li class="list-group-item">
+                {{e.name}}
+              </li>
+            {% endfor %}
+          </ul>
           <div class="panel-footer monster-panel">
-            {{util.build_link("Add an event","#","btn btn-primary btn-xs")}}
+            {{util.build_link("Edit events",url_for('encounter_event_list',encounter_id=encounter.get_id()),"btn btn-primary btn-xs")}}
           </div>
         </div>
       </div>

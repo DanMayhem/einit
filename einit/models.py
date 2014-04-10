@@ -711,6 +711,7 @@ class EncounterModel(my_db.Model):
   name = my_db.Column(my_db.String(64))
   description = my_db.Column(my_db.String(512))
   actors = sqlalchemy.orm.relationship("ActorModel")
+  events = sqlalchemy.orm.relationship("EventModel")
 
   creator_id = my_db.Column(my_db.Integer,my_db.ForeignKey('users.id'))
 
@@ -843,6 +844,24 @@ class Encounter(object):
         my_db.session.add(am)
       my_db.session.commit()
 
+  def get_events(self):
+    return sorted(
+      map(
+        lambda e: EncounterEvent(self, e), self.encounter_model.events),
+      key=lambda x: x.name)
+
+  def add_event(self, name, description):
+    ee = EncounterEvent(self)
+    ee.name = name
+    ee.description = description
+    ee.save()
+
+  def get_event_by_id(self, event_id):
+    for e in self.get_events():
+      if e.get_id() == event_id:
+        return e
+    return None
+
 class ActorModel(my_db.Model):
   __tablename__ = 'actors'
   id = my_db.Column(my_db.Integer, primary_key = True)
@@ -852,4 +871,45 @@ class ActorModel(my_db.Model):
   initiative = my_db.Column(my_db.Integer)
 
   encounter_id = my_db.Column(my_db.Integer,my_db.ForeignKey('encounters.id'))
+
+class EventModel(my_db.Model):
+  __tablename__ = 'encounter_events'
+  id = my_db.Column(my_db.Integer, primary_key = True)
+  name = my_db.Column(my_db.String(64))
+  description = my_db.Column(my_db.String(512))
+
+  encounter_id = my_db.Column(my_db.Integer,my_db.ForeignKey('encounters.id'))
+
+class EncounterEvent(object):
+  def __init__(self, e, ee=None):
+    if ee is None:
+      self.encounter_event = EventModel()
+      self.encounter_event.encounter_id = e.get_id()
+    else:
+      self.encounter_event = ee
+
+  @property
+  def name(self):
+    return self.encounter_event.name
+  @name.setter
+  def name(self, value):
+    self.encounter_event.name = value
+    
+  @property
+  def description(self):
+    return self.encounter_event.description
+  @description.setter
+  def description(self, value):
+    self.encounter_event.description = value
+    
+  def save(self):
+    my_db.session.add(self.encounter_event)
+    my_db.session.commit()
+
+  def get_id(self):
+    return self.encounter_event.id
+
+  def destroy(self):
+    my_db.session.delete(self.encounter_event)
+    my_db.session.commit()
 
