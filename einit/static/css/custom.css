@@ -1,7 +1,18 @@
 /* universal */
+@font-face {
+    font-family: 'Glyph DnD';
+    src: url('../fonts/dnd-glyph-webfont.eot');
+    src: url('../fonts/dnd-glyph-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/dnd-glyph-webfont.woff') format('woff'),
+         url('../fonts/dnd-glyph-webfont.ttf') format('truetype'),
+         url('../fonts/dnd-glyph-webfont.svg#your_iconsregular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
 
 body {
   padding-top: 100px;
+
 }
 
 .monster-left {
@@ -16,6 +27,40 @@ body {
 }
 
 .monster-panel{
-  overflow:hidden;
+  overflow: hidden;
   width:100%;
+}
+
+
+.glyphdnd {
+  position: relative;
+  top: 1px;
+  display: inline-block;
+  font-family: 'Glyph DnD';
+  line-height: 1;
+  font-size:1.1em;
+}
+
+.glyphdnd-melee:before {
+  content: "m";
+}
+
+.glyphdnd-melee-basic:before {
+  content: "M";
+}
+
+.glyphdnd-ranged:before {
+  content: "r";
+}
+
+.glyphdnd-ranged-basic:before {
+  content: "R";
+}
+
+.glyphdnd-close:before {
+  content: "c";
+}
+
+.glyphdnd-area:before {
+  content: "a";
 }

@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   version="1.0"
+   width="1000"
+   height="1000"
+   id="svg5496"
+   sodipodi:version="0.32"
+   inkscape:version="0.48.4 r9939"
+   sodipodi:docname="dnd-glyph.svg"
+   inkscape:output_extension="org.inkscape.output.svg.inkscape">
+  <metadata
+     id="metadata5594">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <sodipodi:namedview
+     inkscape:window-height="706"
+     inkscape:window-width="1366"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     borderopacity="1.0"
+     bordercolor="#666666"
+     pagecolor="#ffffff"
+     id="base"
+     showgrid="true"
+     showguides="true"
+     inkscape:guide-bbox="true"
+     inkscape:zoom="0.454"
+     inkscape:cx="565.28882"
+     inkscape:cy="447.14282"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:current-layer="svg5496"
+     inkscape:window-maximized="1">
+    <sodipodi:guide
+       orientation="horizontal"
+       position="605.72687,-26.431718"
+       id="guide5596" />
+    <inkscape:grid
+       type="xygrid"
+       id="grid3462" />
+  </sodipodi:namedview>
+  <defs
+     id="defs5498">
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect3991"
+       is_visible="true" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect3987"
+       is_visible="true" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect3957"
+       is_visible="true" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect3932"
+       is_visible="true" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect3924"
+       is_visible="true" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect3904"
+       is_visible="true" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect3865"
+       is_visible="true" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect3861"
+       is_visible="true" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect3857"
+       is_visible="true" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect3853"
+       is_visible="true" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect3849"
+       is_visible="true" />
+    <inkscape:perspective
+       sodipodi:type="inkscape:persp3d"
+       inkscape:vp_x="0 : 500 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_z="1000 : 500 : 1"
+       inkscape:persp3d-origin="500 : 333.33333 : 1"
+       id="perspective3931" />
+    <font
+       horiz-adv-x="1024"
+       id="font3933"
+       inkscape:label="font 1">
+      <font-face
+         units-per-em="1024"
+         id="font-face3935"
+         font-family="Your Icons" />
+      <missing-glyph
+         d="M0,0h1000v1024h-1000z"
+         id="missing-glyph3937" />
+      <glyph
+         glyph-name="glyph 1"
+         id="glyph3781"
+         unicode="m"
+         d="m 490,104 60,0 0,200 100,0 0,80 -40,0 0,-40 -60,0 40,420 -80,180 -80,-180 40,-420 -80,0 0,40 -40,0 0,-80 120,0 0,-200 20,0" />
+      <glyph
+         glyph-name="glyph 2"
+         id="glyph3789"
+         unicode="M"
+         d="M 500,1002.5937 C 235.89683,1002.5937 21.40625,788.10317 21.40625,524 21.40625,259.89683 235.89683,45.40625 500,45.40625 c 264.10317,0 478.59375,214.49058 478.59375,478.59375 0,264.10317 -214.49058,478.5937 -478.59375,478.5937 z m 0,-37.18745 C 743.9988,965.40625 941.40625,767.9988 941.40625,524 941.40625,280.0012 743.9988,82.59375 500,82.59375 256.0012,82.59375 58.59375,280.0012 58.59375,524 58.59375,767.9988 256.0012,965.40625 500,965.40625 z M 490,104 l 60,0 0,200 100,0 0,80 -40,0 0,-40 -60,0 40,420 -80,180 -80,-180 40,-420 -80,0 0,40 -40,0 0,-80 120,0 0,-200 20,0" />
+      <glyph
+         glyph-name="glyph 3"
+         id="glyph3869"
+         unicode="r"
+         d="m 190,504 -20,-60 80,0 20,60 -80,0 m 0,40 -20,60 80,0 20,-60 -80,0 m 540,-60 0,80 100,-40 -100,-40 m -560,20 560,0 0,40 -560,0 0,-40 M 330,884 450,804 570,524 450,244 330,164 490,244 650,524 490,804 330,884" />
+      <glyph
+         glyph-name="glyph 4"
+         id="glyph3871"
+         d="M 500,1013.8125 C 229.8439,1013.8125 10.1875,794.1561 10.1875,524 10.1875,253.8439 229.8439,34.1875 500,34.1875 c 270.1561,0 489.8125,219.6564 489.8125,489.8125 0,270.1561 -219.6564,489.8125 -489.8125,489.8125 z m 0,-59.625 C 737.94587,954.1875 930.1875,761.94587 930.1875,524 930.1875,286.05413 737.94587,93.8125 500,93.8125 262.05413,93.8125 69.8125,286.05413 69.8125,524 69.8125,761.94587 262.05413,954.1875 500,954.1875 z M 190,504 l -20,-60 80,0 20,60 -80,0 m 0,40 -20,60 80,0 20,-60 -80,0 m 540,-60 0,80 100,-40 -100,-40 m -560,20 560,0 0,40 -560,0 0,-40 M 330,884 450,804 570,524 450,244 330,164 490,244 650,524 490,804 330,884"
+         unicode="R" />
+      <glyph
+         glyph-name="glyph 5"
+         id="glyph3914"
+         unicode="c"
+         d="M 176.49447,425.14316 463.55022,319.31784 687.82271,111.22688 400.76696,217.0522 176.49447,425.14316 M 178.96143,622.85684 466.01718,728.68216 690.28967,936.77312 403.23392,830.9478 178.96143,622.85684 M 280,561.31278 l 0,-80 460,0 0,-60 140,100 -140,100 0,-60 -460,0 m -40,-40 c 0,-33.13708 -26.86292,-60 -60,-60 -33.13709,0 -60,26.86292 -60,60 0,33.13708 26.86291,60 60,60 33.13708,0 60,-26.86292 60,-60 z" />
+      <glyph
+         glyph-name="glyph 6"
+         id="glyph3916"
+         unicode="a"
+         d="m 388.2018,381.47063 32.37572,-23.49069 -140.94418,-194.25432 32.37572,-23.49069 -83.79962,-13.32754 -13.32754,83.79963 32.37572,-23.4907 140.94418,194.25431 m 249.05582,2 -32.37572,-23.49069 140.94418,-194.25432 -32.37572,-23.49069 83.79962,-13.32754 13.32754,83.79963 -32.37572,-23.4907 -140.94418,194.25431 m 0.0353,240.9698 -32.37572,23.49069 140.94418,194.25432 -32.37572,23.49069 83.79962,13.32754 13.32754,-83.79963 -32.37572,23.4907 -140.94418,-194.25431 m -247.57564,1.40969 32.37572,23.49069 -140.94418,194.25432 32.37572,23.49069 -83.79962,13.32754 -13.32754,-83.79963 32.37572,23.4907 140.94418,-194.25431 M 600,524 l 0,-40 240,0 0,-40 60,60 -60,60 0,-40 -240,0 m -100,0 -80,80 0,-60 -340,0 0,-80 340,0 0,-60 100,100 -20,20" />
+    </font>
+    <font
+       horiz-adv-x="1024"
+       id="font3775"
+       inkscape:label="font 2">
+      <font-face
+         units-per-em="1024"
+         id="font-face3777"
+         font-family="SVGFont 2" />
+      <missing-glyph
+         d="M0,0h1000v1024h-1000z"
+         id="missing-glyph3779" />
+    </font>
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect3932-1"
+       is_visible="true" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect3957-4"
+       is_visible="true" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect3991-9"
+       is_visible="true" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect3991-8"
+       is_visible="true" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect3991-2"
+       is_visible="true" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect3991-5"
+       is_visible="true" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect3991-5-7"
+       is_visible="true" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect3991-5-7-1"
+       is_visible="true" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect3991-5-7-1-2"
+       is_visible="true" />
+  </defs>
+  <path
+     id="path3989-1-1-5-7"
+     style="fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+     d="m 388.2018,642.52937 32.37572,23.49069 -140.94418,194.25432 32.37572,23.49069 -83.79962,13.32754 -13.32754,-83.79963 32.37572,23.4907 140.94418,-194.25431 m 249.05582,-2 -32.37572,23.49069 140.94418,194.25432 -32.37572,23.49069 83.79962,13.32754 13.32754,-83.79963 -32.37572,23.4907 -140.94418,-194.25431 m 0.0353,-240.9698 -32.37572,-23.49069 140.94418,-194.25432 -32.37572,-23.49069 83.79962,-13.32754 13.32754,83.79963 -32.37572,-23.4907 -140.94418,194.25431 m -247.57564,-1.40969 32.37572,-23.49069 -140.94418,-194.25432 32.37572,-23.49069 -83.79962,-13.32754 -13.32754,83.79963 32.37572,-23.4907 140.94418,194.25431 M 600,500 l 0,40 240,0 0,40 60,-60 -60,-60 0,40 -240,0 m -100,0 -80,-80 0,60 -340,0 0,80 340,0 0,60 100,-100 -20,-20" />
+</svg>

@@ -1,0 +1,32 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd" >
+<svg xmlns="http://www.w3.org/2000/svg">
+<metadata></metadata>
+<defs>
+<font id="your_iconsregular" horiz-adv-x="2048" >
+<font-face units-per-em="2048" ascent="1638" descent="-410" />
+<missing-glyph horiz-adv-x="500" />
+<glyph horiz-adv-x="0" />
+<glyph unicode="&#xd;" />
+<glyph unicode="M" d="M43 1048q0 -194 76 -371.5t204 -305.5t305.5 -204t371.5 -76t371.5 76t305.5 204t204 305.5t76 371.5t-76 371.5t-204 305.5t-305.5 204t-371.5 76t-371.5 -76t-305.5 -204t-204 -305.5t-76 -371.5zM117 1048q0 180 70 343.5t188 281.5t281.5 188t343.5 70t343.5 -70 t281.5 -188t188 -281.5t70 -343.5t-70 -343.5t-188 -281.5t-281.5 -188t-343.5 -70t-343.5 70t-281.5 188t-188 281.5t-70 343.5zM700 608h240v-400h40h120v400h200v160h-80v-80h-120l80 840l-160 360l-160 -360l80 -840h-160v80h-80v-160z" />
+<glyph unicode="R" d="M20 1048q0 -199 78 -380.5t209 -312.5t312.5 -209t380.5 -78t380.5 78t312.5 209t209 312.5t78 380.5t-78 380.5t-209 312.5t-312.5 209t-380.5 78t-380.5 -78t-312.5 -209t-209 -312.5t-78 -380.5zM140 1048q0 175 68 334.5t183 274.5t274.5 183t334.5 68t334.5 -68 t274.5 -183t183 -274.5t68 -334.5t-68 -334.5t-183 -274.5t-274.5 -183t-334.5 -68t-334.5 68t-274.5 183t-183 274.5t-68 334.5zM340 888h160l40 120h-160zM340 1008h1120v80h-1120v-80zM340 1208h160l40 -120h-160zM660 328l320 160l320 560l-320 560l-320 160l240 -160 l240 -560l-240 -560zM1460 968v160l200 -80z" />
+<glyph unicode="a" d="M160 928h680v-120l200 200l-40 40l-160 160v-120h-680v-160zM430 421l65 -47l281 389l65 -47l-282 -389l65 -47l-168 -26zM433 1593l65 47l281 -388l65 47l-282 388l65 47l-168 27zM1200 968h480v-80l120 120l-120 120v-80h-480v-80zM1210 720l282 -389l-65 -47l167 -26 l27 167l-65 -47l-281 389zM1210 1296l282 388l-65 47l168 27l26 -168l-65 47l-281 -388z" />
+<glyph unicode="c" d="M240 1043q0 49 35 84.5t85 35.5t85 -35.5t35 -84.5t-35 -84.5t-85 -35.5t-85 35.5t-35 84.5zM353 850l574 -211l449 -417l-574 212zM358 1246l574 211l449 417l-575 -212zM560 963h920v-120l280 200l-280 200v-120h-920v-160z" />
+<glyph unicode="m" d="M700 608h240v-400h40h120v400h200v160h-80v-80h-120l80 840l-160 360l-160 -360l80 -840h-160v80h-80v-160z" />
+<glyph unicode="r" d="M340 888h160l40 120h-160zM340 1008h1120v80h-1120v-80zM340 1208h160l40 -120h-160zM660 328l320 160l320 560l-320 560l-320 160l240 -160l240 -560l-240 -560zM1460 968v160l200 -80z" />
+<glyph unicode="&#x2000;" horiz-adv-x="1024" />
+<glyph unicode="&#x2001;" />
+<glyph unicode="&#x2002;" horiz-adv-x="1024" />
+<glyph unicode="&#x2003;" />
+<glyph unicode="&#x2004;" horiz-adv-x="682" />
+<glyph unicode="&#x2005;" horiz-adv-x="512" />
+<glyph unicode="&#x2006;" horiz-adv-x="341" />
+<glyph unicode="&#x2007;" horiz-adv-x="341" />
+<glyph unicode="&#x2008;" horiz-adv-x="256" />
+<glyph unicode="&#x2009;" horiz-adv-x="409" />
+<glyph unicode="&#x200a;" horiz-adv-x="113" />
+<glyph unicode="&#x202f;" horiz-adv-x="409" />
+<glyph unicode="&#x205f;" horiz-adv-x="512" />
+<glyph unicode="&#x25fc;" horiz-adv-x="500" d="M0 0z" />
+</font>
+</defs></svg> 

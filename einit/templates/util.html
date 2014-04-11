@@ -131,6 +131,24 @@
 
 {% macro display_action(action, editable=True) %}
   <div class="list-group-item list-group-item-info">
+    {% if action.icon=="melee" %}
+    <span class="glyphdnd glyphdnd-melee"> </span>
+    {% endif %}
+    {% if action.icon=="melee-basic" %}
+    <span class="glyphdnd glyphdnd-melee-basic"> </span>
+    {% endif %}
+    {% if action.icon=="ranged" %}
+    <span class="glyphdnd glyphdnd-ranged"> </span>
+    {% endif %}
+    {% if action.icon=="ranged-basic" %}
+    <span class="glyphdnd glyphdnd-ranged-basic"> </span>
+    {% endif %}
+    {% if action.icon=="area" %}
+    <span class="glyphdnd glyphdnd-area"> </span>
+    {% endif %}
+    {% if action.icon=="close" %}
+    <span class="glyphdnd glyphdnd-close"> </span>
+    {% endif %}
     <strong>{{action.name}}</strong>
     {{ "(%s)"%action.keywords if action.keywords|trim }}
     {%if action.frequency|trim %}

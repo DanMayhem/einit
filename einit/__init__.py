@@ -47,6 +47,10 @@ def index():
     return flask.redirect(flask.url_for('hero'))
   return flask.render_template("index.html")
 
+@app.route('/fml')
+def fml():
+  return flask.render_template("dnd-glyph-demo.html")
+
 #user routes
 @app.route('/signup', methods=['GET','POST'])
 def signup():
@@ -579,7 +583,7 @@ def encounter_event_del(encounter_id, event_id):
     flask.flash("%s event deleted forever"%event.name, 'danger')
     event.destroy()
   return flask.redirect(flask.url_for('encounter_event_list',encounter_id=encounter_id))
-  
+
 
 
 
