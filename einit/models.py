@@ -11,6 +11,8 @@ my_db = einit.db
 _max_level = 40
 _xp_by_level = [0,100,125,150,175,200,250,300,350,400,500,600,700,800,1000,1200,1400,1600,2000,2400,2800,3200,4150,5100,6050,7000,9000,11000,13000,15000,19000,23000,27000,31000,39000,47000,55000,63000,79000,95000,111000]
 _role_xp_factor = {"":1,"Standard":1,"Minion":.25,"Elite":2,"Solo":5}
+_statuses = "Bloodied Dominated Stunned Dazed Weakened Blinded Prone Immobilized Slowed Marked Dying Unconscious Helpless Surprised Petrified Restrained Deafened Grabbed".split()
+_statuses.append(["Removed from play","Ongoing damage"])
 
 class UserModel(my_db.Model):
   __tablename__ = 'users'
@@ -912,4 +914,25 @@ class EncounterEvent(object):
   def destroy(self):
     my_db.session.delete(self.encounter_event)
     my_db.session.commit()
+
+class EncounterEntryModel(my_db.Model):
+  __tablename__="encounter_entries"
+  id = my_db.Column(my_db.Integer, primary_key = True)
+  initiative = my_db.Column(my_db.Integer)
+  spawn_index = my_db.Column(my_db.Integer)
+
+  hp = my_db.Column(my_db.Integer)
+  temp_hp = my_db.Column(my_db.Integer)
+  visible = my_db.Column(my_db.SmallInteger, default=1)
+  statuses = sqlalchemy.orm.relationship("EncounterEntryStatusModel")
+
+  category = my_db.Column(my_db.String(64))
+  reference_id = my_db.Column(my_db.Integer)
+
+  encounter_id = my_db.Column(my_db.Integer,my_db.ForeignKey('encounters.id'))
+
+class EncounterEntryStatusModel(my_db.Model):
+  __tablename__="encounter_entry_statuses"
+  id = my_db.Column(my_db.Integer, primary_key=True)
+  status = my_db.Column(my_db.String(64))
 

@@ -77,6 +77,7 @@
     <div class="monster-right">
       <p>{{util.build_link("Edit encounter",url_for('edit_encounter',encounter_id=encounter.get_id()),"btn btn-primary btn-xs")}}</p>
       <p>{{util.build_link("Delete encounter",url_for('destroy_encounter',encounter_id=encounter.get_id()),"btn btn-danger btn-xs")}}</p>
+      <p>{{util.build_link("Start encounter",url_for('start_encounter',encounter_id=encuonter.get_id(),"btn btn-warning btn-xs")}}</p>
     </div>
   </div>
 </div>

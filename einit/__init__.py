@@ -47,10 +47,6 @@ def index():
     return flask.redirect(flask.url_for('hero'))
   return flask.render_template("index.html")
 
-@app.route('/fml')
-def fml():
-  return flask.render_template("dnd-glyph-demo.html")
-
 #user routes
 @app.route('/signup', methods=['GET','POST'])
 def signup():
@@ -584,7 +580,13 @@ def encounter_event_del(encounter_id, event_id):
     event.destroy()
   return flask.redirect(flask.url_for('encounter_event_list',encounter_id=encounter_id))
 
-
-
+@app.route("/encounter/<int:encounter_id>/start", methods=['GET'])
+@flask.ext.login.login_required
+def start_encounter(encounter_id):
+  encounter = flask.ext.login.current_user.get_encounter_by_id(encounter_id)
+  if encounter is None:
+    flask.flash("Unable to find encounter","warning")
+    return flask.redirect(flask.url_for('index'))
+ 
 
 
