@@ -587,6 +587,11 @@ def start_encounter(encounter_id):
   if encounter is None:
     flask.flash("Unable to find encounter","warning")
     return flask.redirect(flask.url_for('index'))
+  form = flask.ext.wtf.Form()
+  actors = encounter.get_heroes()
+  actors.append(encounter.get_monsters())
+  events = encounter.get_events()
+  
  
 
 

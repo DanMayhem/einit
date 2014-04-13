@@ -936,3 +936,4 @@ class EncounterEntryStatusModel(my_db.Model):
   id = my_db.Column(my_db.Integer, primary_key=True)
   status = my_db.Column(my_db.String(64))
 
+

@@ -132,3 +132,5 @@ class EncounterEventForm(w.Form):
   description = f.TextAreaField('Description')
 
   save = f.SubmitField('Add event')
+
+
