@@ -76,10 +76,10 @@
   <div class="panel-footer monster-panel">
     <div class="monster-left">
       {% if encounter.round > 0 %}
-        <div class="alert alert-info">Encounter in Progress</div>
+        <p><strong>Encounter in Progress</strong></p>
         <p>{{util.build_link("View encounter","#","btn btn-primary btn-xs")}}</p>
-        <p>{{util.build_link("Manage encounter","#","btn btn-success btn-xs")}}</p>
-        <p>{{util.build_link("Abandon encounter","#","btn btn-danger btn-xs")}}</p>
+        <p>{{util.build_link("Manage encounter",url_for("manage_encounter",encounter_id=encounter.get_id()),"btn btn-success btn-xs")}}</p>
+        <p>{{util.build_link("Abandon encounter",url_for("abandon_encounter",encounter_id=encounter.get_id()),"btn btn-danger btn-xs")}}</p>
       {%else%}
         <p>{{util.build_link("Start encounter",url_for('start_encounter',encounter_id=encounter.get_id()),"btn btn-success btn-xs")}}
       {%endif%}

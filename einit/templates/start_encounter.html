@@ -8,6 +8,15 @@
     <div class="panel panel-primary">
       <div class="panel-heading">
         <h1 class="panel-title">Start Encounter {{encounter.name}}</h1>
+        {% if form.errors %}
+        <ul class="errors">
+        {% for field_name, field_errors in form.errors|dictsort if field_errors %}
+            {% for error in field_errors %}
+                <li>{{ form[field_name].label }}: {{ error }}</li>
+            {% endfor %}
+        {% endfor %}
+    </ul>
+{% endif %}
       </div>
       <table class="table table-striped">
         <tr>
@@ -23,6 +32,7 @@
             {{aa.get_display_name()}}
             {{actor.actor_category}}
             {{actor.actor_id}}
+            {{actor.csrf_token}}
           </td>
           <td>{{actor.starting_hp}}</td>
           <td>{{actor.initiative}}</td>
@@ -35,6 +45,7 @@
             <strong>{{e.name}}</strong>
             <small>{{e.description}}</small>
             {{event.event_id}}
+            {{event.csrf_token}}
           </td>
           <td>{{event.initiative}}</td>
         </tr>
