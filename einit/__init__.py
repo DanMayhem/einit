@@ -1,4 +1,5 @@
 import os
+import random
 
 import flask
 import flask.ext.sqlalchemy
@@ -580,18 +581,75 @@ def encounter_event_del(encounter_id, event_id):
     event.destroy()
   return flask.redirect(flask.url_for('encounter_event_list',encounter_id=encounter_id))
 
-@app.route("/encounter/<int:encounter_id>/start", methods=['GET'])
+@app.route("/encounter/<int:encounter_id>/start", methods=['GET',"POST"])
 @flask.ext.login.login_required
 def start_encounter(encounter_id):
   encounter = flask.ext.login.current_user.get_encounter_by_id(encounter_id)
   if encounter is None:
     flask.flash("Unable to find encounter","warning")
     return flask.redirect(flask.url_for('index'))
-  form = flask.ext.wtf.Form()
-  actors = encounter.get_heroes()
-  actors.append(encounter.get_monsters())
-  events = encounter.get_events()
+  form = einit.views.EncounterStartForm()
+  if form.validate_on_submit():
+    events = []
+    while len(form.actors) > 0:
+      f = form.actors.pop_entry()
+      actor = encounter.get_actor_by_category_id(f.actor_category.data, f.actor_id.data)
+      for i in range(0,encounter.get_actor_spawn_count(actor)):
+        e = EncounterEntry(encounter)
+        e.initiative = abs(f.initiative.data)
+        e.spawn_index = i
+        e.hp = f.starting_hp.data
+        e.temp_hp = 0
+        e.visible = (f.initiative.data >= 0) #negative initiative means entry is initially hidden
+        e.category = f.get_category()
+        e.reference_id = f.actor_id.data
+        events.append(e)
+    while len(form.events) > 0:
+      f = form.events.pop_entry()
+      e.initiative = abs(f.initiative.data)
+      e.spawn_index = 0
+      e.hp = 0
+      e.temp_hp = 0
+      e.visible = (f.initiative.data >= 0)
+      e.category = 'event'
+      e.reference_id = f.event_id.data
+      events.append(e)
+      events.sort()
+      for idx in range(0,len(events)):
+        events[idx].initiative_order = idx
+    encounter.start(actors, events)
+    flask.redirect(flask.url_for('manage_encounter',encounter_id=encounter_id))
+  else:
+    while len(form.actors) > 0:
+      form.actors.pop_entry()
+    for actor in encounter.get_heroes():
+      form.actors.append_entry()
+      form.actors[-1].actor_category.data = actor.get_category()
+      form.actors[-1].actor_id.data = actor.get_id()
+      form.actors[-1].starting_hp.data = actor.get_max_hp()
+      form.actors[-1].initiative.data = random.choice(range(1,20))+actor.get_initiative_modifier()
+    for actor in encounter.get_monsters():
+      form.actors.append_entry()
+      form.actors[-1].actor_category.data = actor.get_category()
+      form.actors[-1].actor_id.data = actor.get_id()
+      form.actors[-1].starting_hp.data = actor.get_max_hp()
+      form.actors[-1].initiative.data = random.choice(range(1,20))+actor.get_initiative_modifier()
+    while len(form.events) > 0:
+      form.events.pop_entry()
+    for event itn encounter.get_events():
+      form.events.append_entry()
+      form.events[-1].event_id.data = event.get_id()
+      form.events[-1].initiative.data = 0
+  return flask.render_template("start_encounter.html",encounter=encounter, form=form)
   
  
+@app.route("/encounter/<int:encounter_id>/manage", methods=['GET',"POST"])
+@flask.ext.login.login_required
+def manage_encounter(encounter_id):
+  encounter = flask.ext.login.current_user.get_encounter_by_id(encounter_id)
+  if encounter is None:
+    flask.flash("Unable to find encounter","warning")
+    return flask.redirect(flask.url_for('index'))
+  return render_template("view_encounter.html",encounter=encounter)
 
 

@@ -205,6 +205,9 @@ class Actor(object):
   def get_xp(self):
     return _xp_by_level[self.get_level()]
 
+  def get_initiative_modifier(self):
+    return 0
+
 class HeroModel(my_db.Model):
   __tablename__='heroes'
   id = my_db.Column(my_db.Integer, primary_key = True)
@@ -295,6 +298,10 @@ class Hero(Actor):
 
   def get_level(self):
     return self.level
+
+  def get_initiative_modifier(self):
+    return self.initiative_modifier
+
 
 
 class MonsterModel(my_db.Model):
@@ -537,7 +544,10 @@ class Monster(Actor):
     return self.name
 
   def get_level(self):
-    return level
+    return self.level
+
+  def get_initiative_modifier(self):
+    return self.initiative_modifier
 
 class MonsterActionModel(my_db.Model):
   __tablename__ = 'monster_actions'
@@ -712,8 +722,10 @@ class EncounterModel(my_db.Model):
   id = my_db.Column(my_db.Integer, primary_key = True)
   name = my_db.Column(my_db.String(64))
   description = my_db.Column(my_db.String(512))
+  round = my_db.Column(my_db.Integer, default=0)
   actors = sqlalchemy.orm.relationship("ActorModel")
   events = sqlalchemy.orm.relationship("EventModel")
+  entries = sqlalchemy.orm.relationship("EncounterEntryModel", backref="encounter")
 
   creator_id = my_db.Column(my_db.Integer,my_db.ForeignKey('users.id'))
 
@@ -738,6 +750,13 @@ class Encounter(object):
   @description.setter
   def description(self, value):
     self.encounter_model.description = value
+    
+  @property
+  def round(self):
+    return self.encounter_model.round
+  @round.setter
+  def round(self, value):
+    self.encounter_model.round = value
     
   def save(self):
     my_db.session.add(self.encounter_model)
@@ -801,7 +820,15 @@ class Encounter(object):
       key=lambda x: x.name
     )
 
-  def find_actor(self, category, actor_id):
+  def get_actor_by_category_id(self, category, id):
+    my_user = User.get_user_by_id(self.encounter_model.creator_id)
+    if category == 'hero':
+      return my_user.get_hero_by_id(id)
+    if category == 'monster':
+      return my_user.get_monster_by_id(id)
+    return None
+
+  def _find_actor(self, category, actor_id):
     actor = None
     for am in self.encounter_model.actors:
       if am.category == category and am.reference_id == actor_id:
@@ -809,7 +836,7 @@ class Encounter(object):
     return actor
 
   def get_actor_spawn_count(self, actor):
-    am = self.find_actor(actor.get_category(), actor.get_id())
+    am = self._find_actor(actor.get_category(), actor.get_id())
     if am is not None:
       return am.spawn_count
     return 0
@@ -821,7 +848,7 @@ class Encounter(object):
     self.add_actor(m)
 
   def add_actor(self, actor):
-    am = self.find_actor(actor.get_category(),actor.get_id())
+    am = self._find_actor(actor.get_category(),actor.get_id())
     if am is None:
       am = ActorModel()
       am.spawn_count = 0
@@ -837,7 +864,7 @@ class Encounter(object):
     self.remove_actor(h)
 
   def remove_actor(self, a):
-    am = self.find_actor(a.get_category(), a.get_id())
+    am = self._find_actor(a.get_category(), a.get_id())
     if am is not None:
       am.spawn_count -= 1
       if am.spawn_count <=0:
@@ -863,6 +890,26 @@ class Encounter(object):
       if e.get_id() == event_id:
         return e
     return None
+
+  def get_encounter_entries(self):
+    return sorted(
+      map(
+        lambda e: EncounterEntry(self, e), self.encounter_model.entries),
+      key=lambda x: x.initiative_order)
+
+  def abandon_encounter(self):
+    self.round=0
+    for e in self.get_events():
+      e.destroy()
+
+  def start(self, events):
+    """initializes the encounter"""
+    #first delete any leftovers from previous runs of the encounter
+    self.abandon_encounter()
+    self.round=1
+    for e in events:
+      my_db.session.add(e)
+      my_db.session.commit()
 
 class ActorModel(my_db.Model):
   __tablename__ = 'actors'
@@ -919,6 +966,7 @@ class EncounterEntryModel(my_db.Model):
   __tablename__="encounter_entries"
   id = my_db.Column(my_db.Integer, primary_key = True)
   initiative = my_db.Column(my_db.Integer)
+  initiative_order = my_db.Column(my_db.Integer)
   spawn_index = my_db.Column(my_db.Integer)
 
   hp = my_db.Column(my_db.Integer)
@@ -935,5 +983,101 @@ class EncounterEntryStatusModel(my_db.Model):
   __tablename__="encounter_entry_statuses"
   id = my_db.Column(my_db.Integer, primary_key=True)
   status = my_db.Column(my_db.String(64))
+
+  encounter_entry_id = my_db.Column(my_db.Integer,my_db.ForeignKey('encounter_entries.id'))
+
+class EncounterEntry(object):
+  def __init__(self, e, ee=None):
+    if ee is None:
+      self.encounter_entry = EncounterEntryModel()
+      self.encounter_entry.encounter_id = e.get_id()
+    else:
+      self.encounter_event = ee
+
+  @property
+  def initiative(self):
+    return self.encounter_entry.initiative
+  @initiative.setter
+  def initiative(self, value):
+    self.encounter_entry.initiative = value
+
+  @property
+  def initiative_order(self):
+    return self.encounter_entry.initiative_order
+  @initiative_order.setter
+  def initiative_order(self, value):
+    self.encounter_entry.initiative_order = value
+
+  @property
+  def spawn_index(self):
+    return self.encounter_entry.spawn_index
+  @spawn_index.setter
+  def spawn_index(self, value):
+    self.encounter_entry.spawn_index = value
+
+  @property
+  def hp(self):
+    return self.encounter_entry.hp
+  @hp.setter
+  def hp(self, value):
+    self.encounter_entry.hp = value
+
+  @property
+  def temp_hp(self):
+    return self.encounter_entry.temp_hp
+  @temp_hp.setter
+  def temp_hp(self, value):
+    self.encounter_entry.temp_hp = value
+
+  @property
+  def visible(self):
+    return self.encounter_entry.visible
+  @visible.setter
+  def visible(self, value):
+    self.encounter_entry.visible = value
+
+  @property
+  def category(self):
+    return self.encounter_entry.category
+  @category.setter
+  def category(self, value):
+    self.encounter_entry.category = value
+
+  @property
+  def reference_id(self):
+    return self.encounter_entry.reference_id
+  @reference_id.setter
+  def reference_id(self, value):
+    self.encounter_entry.reference_id = value
+
+  def destroy(self):
+    my_db.session.delete(self.encounter_entry)
+    my_db.session.commit()
+
+  def __lt__(self, other):
+    lhs = self.encounter_entry
+    rhs = other.encoutner_entry
+    if lhs.initiative == rhs.initiative:
+      if lhs.category==rhs.category:
+        if lhs.category=="hero":
+          e = Encounter(lhs.encounter)
+          la = e.get_actor_by_category_id("hero",lhs.reference_id)
+          ra = e.get_actor_by_category_id("hero",rhs.reference_id)
+          return la.initiative_modifier < ra.initiative_modifier
+        if lhs.category=="monster":
+          if lhs.reference_id == rhs.reference_id:
+            """these are the same entry with deifferent spawn indicies"""
+            return lhs.spawn_index < rhs.spawn_index
+          la = e.get_actor_by_category_id("monster",lhs.reference_id)
+          ra = e.get_actor_by_category_id("monster",rhs.reference_id)
+          return la.initiative_modifier < ra.initiative_modifier
+        if lhs.category=="event":
+          return lhs.reference_id<rhs.reference_id
+      if lhs.category=="hero":
+        return True
+      if lhs.category=="monster":
+        return rhs.category!="hero"
+      return False
+    return lhs.initiative < rhs.initiative
 
 

@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% import 'bootstrap/wtf.html' as wtf %}
+{% import "util.html" as util %}
+{% block main_content %}
+<div class="row">
+  <div class="col-sm-8 col-sm-offset-2">
+    <form method="POST" action="?">
+    <div class="panel panel-primary">
+      <div class="panel-heading">
+        <h1 class="panel-title">Start Encounter {{encounter.name}}</h1>
+      </div>
+      <table class="table table-striped">
+        <tr>
+          <th>Actor</th>
+          <th>Starting HP</th>
+          <th>Initiative</th>
+        </tr>
+        {% for actor in form.actors %}
+        {% set aa = encounter.get_actor_by_category_id(actor.actor_category.data, actor.actor_id.data) %}
+        <tr>
+          <td>
+            <img src="{{aa.get_gravatar_url()}}" height="30" width="30" class="img-rounded"/>
+            {{aa.get_display_name()}}
+            {{actor.actor_category}}
+            {{actor.actor_id}}
+          </td>
+          <td>{{actor.starting_hp}}</td>
+          <td>{{actor.initiative}}</td>
+        </tr>
+        {%endfor%}
+        {% for event in form.events %}
+        {% set e = encounter.get_event_by_id(event.event_id.data) %}
+        <tr>
+          <td colspan="2">
+            <strong>{{e.name}}</strong>
+            <small>{{e.description}}</small>
+            {{event.event_id}}
+          </td>
+          <td>{{event.initiative}}</td>
+        </tr>
+        {%endfor%}
+
+
+      </table>
+      <div class="panel-footer">
+        {{form.hidden_tag()}}
+        {{form.start(class="btn btn-primary")}}    
+      </div> 
+    </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

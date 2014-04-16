@@ -133,4 +133,20 @@ class EncounterEventForm(w.Form):
 
   save = f.SubmitField('Add event')
 
+class EncounterActorStartForm(w.Form):
+  actor_category = f.HiddenField('actor_category')
+  actor_id = f.HiddenField('actor_id')
 
+  starting_hp = f.IntegerField('Starting hp')
+  initiative = f.IntegerField('Initiative value')
+
+class EncounterEventStartForm(w.Form):
+  event_id = f.HiddenField('event_id')
+
+  initiative = f.IntegerField('Initiative value')
+
+class EncounterStartForm(w.Form):
+  actors = f.FieldList(f.FormField(EncounterActorStartForm,""),"")
+  events = f.FieldList(f.FormField(EncounterEventStartForm,""),"")
+
+  start = f.SubmitField('Start encounter')
