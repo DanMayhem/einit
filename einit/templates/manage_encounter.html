@@ -1,0 +1,94 @@
+{% extends "encounter.html" %}
+{% import 'bootstrap/wtf.html' as wtf %}
+{% import "util.html" as util %}
+
+{% block encounter_content %}
+<div class="panel panel-primary">
+  <div class="panel-heading">
+    <img src="https://www.gravatar.com/avatar/{{encounter.get_gravatar_hash()}}?s=30&d=identicon" alt="avatar"class="img-rounded pull-left" />
+    <strong>{{encounter.name}}</strong>
+  </div>
+  <div class="panel-body">
+    <div>
+      <p><small>{{encounter.description}}</small></p>
+      <p><strong>Party level: </strong>{{encounter.get_party_level()}}</p>
+      <p><strong>Encounter level: </strong>{{encounter.get_encounter_level()}}</p>
+      <p><strong>Difficulty: </strong>{{encounter.get_difficulty()}}</p>
+    </div>
+    <row>
+      <div class="col-sm-4">
+        <div class="panel panel-info">
+          <div class="panel-heading">
+            <strong>Heroes</strong>
+          </div>
+          <ul class="list-group">
+          {% for h in encounter.get_heroes() %}
+            <li class="list-group-item">
+              <img src="{{h.get_gravatar_url()}}" width="30" height="30" class="img-rounded"/>
+              {{h.get_display_name()}}
+            </li>
+          {%endfor%}
+          </ul>
+          <div class="panel-footer monster-panel">
+            {{util.build_link("Edit heros",url_for('encounter_hero_list',encounter_id=encounter.get_id()),"btn btn-primary btn-xs")}}
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-4">
+        <div class="panel panel-info">
+          <div class="panel-heading">
+            <strong>Monsters</strong>
+          </div>
+          <ul class="list-group">
+          {% for m in encounter.get_monsters() %}
+            <li class="list-group-item">
+              <img src="{{m.get_gravatar_url()}}" width="30" height="30" class="img-rounded"/>
+              {{m.get_display_name()}}
+              <span class="badge">{{encounter.get_actor_spawn_count(m)}}</span>
+            </li>
+          {%endfor%}
+          </ul>
+          <div class="panel-footer monster-panel">
+            {{util.build_link("Edit monsters",url_for('encounter_monster_list',encounter_id=encounter.get_id()),"btn btn-primary btn-xs")}}
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-4">
+        <div class="panel panel-info">
+          <div class="panel-heading">
+            <strong>Events</strong>
+          </div>
+          <ul class="list-group">
+            {% for e in encounter.get_events() %}
+              <li class="list-group-item">
+                {{e.name}}
+              </li>
+            {% endfor %}
+          </ul>
+          <div class="panel-footer monster-panel">
+            {{util.build_link("Edit events",url_for('encounter_event_list',encounter_id=encounter.get_id()),"btn btn-primary btn-xs")}}
+          </div>
+        </div>
+      </div>
+    </row>
+
+  </div>
+  <div class="panel-footer monster-panel">
+    <div class="monster-left">
+      {% if encounter.round > 0 %}
+        <p><strong>Encounter in Progress</strong></p>
+        <p>{{util.build_link("View encounter","#","btn btn-primary btn-xs")}}</p>
+        <p>{{util.build_link("Manage encounter",url_for("manage_encounter",encounter_id=encounter.get_id()),"btn btn-success btn-xs")}}</p>
+        <p>{{util.build_link("Abandon encounter",url_for("abandon_encounter",encounter_id=encounter.get_id()),"btn btn-danger btn-xs")}}</p>
+      {%else%}
+        <p>{{util.build_link("Start encounter",url_for('start_encounter',encounter_id=encounter.get_id()),"btn btn-success btn-xs")}}
+      {%endif%}
+    </div>
+    <div class="monster-right">
+      <p>{{util.build_link("Edit encounter",url_for('edit_encounter',encounter_id=encounter.get_id()),"btn btn-primary btn-xs")}}</p>
+      <p>{{util.build_link("Delete encounter",url_for('destroy_encounter',encounter_id=encounter.get_id()),"btn btn-danger btn-xs")}}</p>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

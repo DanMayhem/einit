@@ -35,10 +35,13 @@ bootstrap = flask_bootstrap.Bootstrap(app) #make bootstrap templates and helpers
 login_manager = flask.ext.login.LoginManager(app) #login manager
 
 #import models, views and helpers
-import einit.models
 import einit.views
-import einit.user_support
-import einit.xml_support
+import einit.models
+
+#set login manager options:
+login_manager.login_message_category='warning'
+login_manager.anonymous_user=einit.models.AnonymousUser
+login_manager.login_view = "signin"
 
 #register static routes
 @app.route('/')
@@ -198,7 +201,7 @@ def create_monster_file():
   if form.validate_on_submit():
     try:
       m = einit.models.Monster(flask.ext.login.current_user)
-      einit.xml_support.monster_from_xml(
+      einit.models.monster_from_xml(
         flask.request.files['filename'].read(),
         m)
       flask.flash("Monster Created","success")
@@ -656,6 +659,6 @@ def manage_encounter(encounter_id):
   if encounter is None:
     flask.flash("Unable to find encounter","warning")
     return flask.redirect(flask.url_for('index'))
-  return flask.render_template("view_encounter.html",encounter=encounter)
+  return flask.render_template("manage_encounter.html",encounter=encounter)
 
 
