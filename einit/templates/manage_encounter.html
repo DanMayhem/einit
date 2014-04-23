@@ -1,94 +1,142 @@
-{% extends "encounter.html" %}
+{% extends "base.html" %}
 {% import 'bootstrap/wtf.html' as wtf %}
 {% import "util.html" as util %}
 
-{% block encounter_content %}
-<div class="panel panel-primary">
-  <div class="panel-heading">
-    <img src="https://www.gravatar.com/avatar/{{encounter.get_gravatar_hash()}}?s=30&d=identicon" alt="avatar"class="img-rounded pull-left" />
-    <strong>{{encounter.name}}</strong>
-  </div>
-  <div class="panel-body">
-    <div>
-      <p><small>{{encounter.description}}</small></p>
-      <p><strong>Party level: </strong>{{encounter.get_party_level()}}</p>
-      <p><strong>Encounter level: </strong>{{encounter.get_encounter_level()}}</p>
-      <p><strong>Difficulty: </strong>{{encounter.get_difficulty()}}</p>
+{% block main_content %}
+<!--start main content-->
+{% if active_entry_id == 0 %}
+  {%set active_entry_id = encounter.current_entry %}
+{%endif%}
+<div class="row">
+  <div class="col-sm-4">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        Intiative Order - Round {{encounter.round}}
+      </div>
+      <div class="list-group">
+        {% for entry in encounter.get_encounter_entries() %}
+          {% if entry.category=="hero" %}
+            {{render_actor_sidebar(entry)}}
+          {% elif entry.category=="monster" %}
+            {{render_actor_sidebar(entry)}}
+          {% elif entry.category=="event" %}
+            {{render_event_sidebar(entry)}}
+          {%endif%}
+        {%endfor%}
+        <div class="list-group-item">
+          <div class="btn-group btn-group-justified">
+            {%set next_round, next_entry = encounter.get_next_entry_id()%}
+            {%set prev_round, prev_entry = encounter.get_prev_entry_id()%}
+            <a href="{{url_for('goto_entry',encounter_id=encounter.get_id(), round=prev_round, entry_id=prev_entry)}}" class="btn btn-lg btn-primary"><span class="glyphicon glyphicon-fast-backward"> </span></a>
+            <a href="{{url_for('goto_entry',encounter_id=encounter.get_id(), round=next_round, entry_id=next_entry)}}" class="btn btn-lg btn-primary"><span class="glyphicon glyphicon-fast-forward"> </span></a>          
+          </div>
+        </div>
+      </div>
     </div>
-    <row>
-      <div class="col-sm-4">
-        <div class="panel panel-info">
-          <div class="panel-heading">
-            <strong>Heroes</strong>
-          </div>
-          <ul class="list-group">
-          {% for h in encounter.get_heroes() %}
-            <li class="list-group-item">
-              <img src="{{h.get_gravatar_url()}}" width="30" height="30" class="img-rounded"/>
-              {{h.get_display_name()}}
-            </li>
-          {%endfor%}
-          </ul>
-          <div class="panel-footer monster-panel">
-            {{util.build_link("Edit heros",url_for('encounter_hero_list',encounter_id=encounter.get_id()),"btn btn-primary btn-xs")}}
-          </div>
-        </div>
-      </div>
-      <div class="col-sm-4">
-        <div class="panel panel-info">
-          <div class="panel-heading">
-            <strong>Monsters</strong>
-          </div>
-          <ul class="list-group">
-          {% for m in encounter.get_monsters() %}
-            <li class="list-group-item">
-              <img src="{{m.get_gravatar_url()}}" width="30" height="30" class="img-rounded"/>
-              {{m.get_display_name()}}
-              <span class="badge">{{encounter.get_actor_spawn_count(m)}}</span>
-            </li>
-          {%endfor%}
-          </ul>
-          <div class="panel-footer monster-panel">
-            {{util.build_link("Edit monsters",url_for('encounter_monster_list',encounter_id=encounter.get_id()),"btn btn-primary btn-xs")}}
-          </div>
-        </div>
-      </div>
-      <div class="col-sm-4">
-        <div class="panel panel-info">
-          <div class="panel-heading">
-            <strong>Events</strong>
-          </div>
-          <ul class="list-group">
-            {% for e in encounter.get_events() %}
-              <li class="list-group-item">
-                {{e.name}}
-              </li>
-            {% endfor %}
-          </ul>
-          <div class="panel-footer monster-panel">
-            {{util.build_link("Edit events",url_for('encounter_event_list',encounter_id=encounter.get_id()),"btn btn-primary btn-xs")}}
-          </div>
-        </div>
-      </div>
-    </row>
+  </div>
+  <div class="col-sm-4">
+  </div>
 
-  </div>
-  <div class="panel-footer monster-panel">
-    <div class="monster-left">
-      {% if encounter.round > 0 %}
-        <p><strong>Encounter in Progress</strong></p>
-        <p>{{util.build_link("View encounter","#","btn btn-primary btn-xs")}}</p>
-        <p>{{util.build_link("Manage encounter",url_for("manage_encounter",encounter_id=encounter.get_id()),"btn btn-success btn-xs")}}</p>
-        <p>{{util.build_link("Abandon encounter",url_for("abandon_encounter",encounter_id=encounter.get_id()),"btn btn-danger btn-xs")}}</p>
-      {%else%}
-        <p>{{util.build_link("Start encounter",url_for('start_encounter',encounter_id=encounter.get_id()),"btn btn-success btn-xs")}}
-      {%endif%}
-    </div>
-    <div class="monster-right">
-      <p>{{util.build_link("Edit encounter",url_for('edit_encounter',encounter_id=encounter.get_id()),"btn btn-primary btn-xs")}}</p>
-      <p>{{util.build_link("Delete encounter",url_for('destroy_encounter',encounter_id=encounter.get_id()),"btn btn-danger btn-xs")}}</p>
-    </div>
-  </div>
 </div>
 
+<!--end main content-->
 {% endblock %}
+
+{% macro render_actor_sidebar(actor_entry) %}
+{% set actor = encounter.get_actor_by_category_id(actor_entry.category,actor_entry.reference_id)%}
+{% set current_entry = encounter.get_current_entry() %}
+{% set addl_li_class = "" %}
+{% if current_entry.category == actor.get_category() and current_entry.reference_id == actor.get_id() %}
+  {% set addl_li_class = "list-group-item-info" %}
+  {% set glyph_class="glyphicon-play" %}
+{% endif %}
+{% if active_entry_id==actor_entry.get_id()%}
+  {%set addl_li_class = "active "+addl_li_class %}
+{% elif active_entry_id == 0 and actor_entry.get_id() == encounter.current_entry%}
+  {%set addl_li_class = "active "+addl_li_class %}
+{% endif %}
+<a href="{{url_for('manage_encounter',encounter_id=encounter.get_id(),active_entry_id=actor_entry.get_id())}}" class="list-group-item {{addl_li_class}}">
+  <!--
+  {{actor.get_id()}}
+  {{actor.get_category()}}
+  {{current_entry.category}}
+  {{current_entry.reference_id}}
+  {{current_entry.get_id()}}
+  {{actor_entry.get_id()}}
+  {{active_entry_id}}
+  -->
+  <div class="row">
+    <div class="col-xs-1">
+      <span class="glyphicon {{glyph_class}}"/>
+    </div>
+    <div class="col-xs-2">
+      <img src="{{actor.get_gravatar_url()}}" width="30" height="30" class="img-rounded"/>
+    </div>
+    <div class="col-xs-8">
+      <div>
+        <strong>{{actor.get_display_name()}}</strong>
+        {%if encounter.get_actor_spawn_count(actor) > 1 %}
+          <span class="badge">{{actor_entry.spawn_index + 1}}</span>
+        {%endif%}
+      </div>
+      <div>
+        <span class="glyphicon glyphicon-cloud"/> <span class="glyphicon glyphicon-camera"/>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-xs-12">
+      <div class="progress">
+        <div class="progress-bar progress-bar-success" style="width: {{(100*actor_entry.hp)//actor.get_max_hp()}}%">
+          {{actor_entry.hp}}
+        </div>
+        {%if actor_entry.temp_hp > 0 %}
+        <div class="progress-bar progress-bar-warning" style="width: {{(100*actor_entry.temp_hp)//actor.get_max_hp()}}%">
+          {{actor_entry.temp_hp}}
+        </div>
+        {%endif%}
+      </div>
+    </div>
+  </div>
+  {% if actor_entry.category=='monster' %}
+    <div class="row">
+      <div class="col-xs-3 text-center">
+        <strong>AC</strong><br/>{{actor.ac}}
+      </div>
+      <div class="col-xs-3 text-center">
+        <strong>Fortitude</strong><br/>{{actor.fortitude}}
+      </div>
+      <div class="col-xs-3 text-center">
+        <strong>Reflex</strong><br/>{{actor.reflex}}
+      </div>
+      <div class="col-xs-3 text-center">
+        <strong>Will</strong><br/>{{actor.will}}
+      </div>
+    </div>
+    {%endif%}
+</a>
+{%endmacro%}
+
+{% macro render_event_sidebar(entry) %}
+{% set current_entry = encounter.get_current_entry() %}
+{% set event = encounter.get_event_by_id(entry.reference_id) %}
+{% set addl_li_class = "" %}
+{% if current_entry.category == "event" and current_entry.reference_id == event.get_id() %}
+  {% set addl_li_class = "list-group-item-info" %}
+  {% set glyph_class="glyphicon-play" %}
+{% endif %}
+{% if active_entry_id==event.get_id()%}
+  {%set addl_li_class = "active "+addl_li_class %}
+{% elif active_entry_id == 0 and entry.get_id() == encounter.current_entry %}
+  {%set addl_li_class = "active "+addl_li_class %}
+{% endif %}
+<!--
+{{active_entry_id}}
+{{event.get_id()}}
+{{encounter.current_entry}}
+-->
+<a href="{{url_for('manage_encounter',encounter_id=encounter.get_id(),active_entry_id=event.get_id())}}" class="list-group-item {{addl_li_class}}">
+  <span class="glyphicon {{glyph_class}}"> </span><strong>{{event.name}}</strong>
+</a>
+{%endmacro%}
+

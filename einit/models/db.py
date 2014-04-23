@@ -99,6 +99,7 @@ class EncounterModel(_db.Model):
   name = _db.Column(_db.String(64))
   description = _db.Column(_db.String(512))
   round = _db.Column(_db.Integer, default=0)
+  current_entry = _db.Column(_db.Integer)
   actors = sqlalchemy.orm.relationship("ActorModel")
   events = sqlalchemy.orm.relationship("EventModel")
   entries = sqlalchemy.orm.relationship("EncounterEntryModel", backref="encounter")

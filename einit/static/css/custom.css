@@ -41,26 +41,75 @@ body {
   font-size:1.1em;
 }
 
-.glyphdnd-melee:before {
-  content: "m";
+.glyphdnd-d6-1:before {
+  content: "1";
 }
 
-.glyphdnd-melee-basic:before {
-  content: "M";
+.glyphdnd-d6-2:before {
+  content: "2";
 }
 
-.glyphdnd-ranged:before {
-  content: "r";
+.glyphdnd-d6-3:before {
+  content: "3";
 }
 
-.glyphdnd-ranged-basic:before {
-  content: "R";
+.glyphdnd-d6-4:before {
+  content: "4";
+}
+
+.glyphdnd-d6-5:before {
+  content: "5";
+}
+
+.glyphdnd-d6-6:before {
+  content: "6";
+}
+
+.glyphdnd-area:before {
+  content: "a";
+}
+
+.glyphdnd-bloodied:before {
+  content: "b";
 }
 
 .glyphdnd-close:before {
   content: "c";
 }
 
-.glyphdnd-area:before {
-  content: "a";
+.glyphdnd-dominated:before {
+  content: "d";
 }
+
+.glyphdnd-grabbed:before {
+  content: "g";
+}
+
+.glyphdnd-melee-basic:before {
+  content: "M";
+}
+
+.glyphdnd-melee:before {
+  content: "m";
+}
+
+.glyphdnd-ranged-basic:before {
+  content: "R";
+}
+
+.glyphdnd-ranged:before {
+  content: "r";
+}
+
+.glyphdnd-stunned:before {
+  content: "s";
+}
+
+.glyphdnd-dazed:before {
+  content: "z";
+}
+
+/*
+   Weakened Blinded Prone Immobilized Slowed Marked Dying Unconscious Helpless Surprised Petrified Restrained Deafened ".split()
+_statuses.append(["Removed from play","Ongoing damage"])
+*/

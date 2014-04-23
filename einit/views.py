@@ -1,6 +1,7 @@
 import flask.ext.wtf as w
 import wtforms as f
 import wtforms.validators as v
+import wtforms.widgets
 
 class SignUpForm(w.Form):
   name = f.StringField('Name', validators=[
@@ -135,13 +136,13 @@ class EncounterEventForm(w.Form):
 
 class EncounterActorStartForm(w.Form):
   actor_category = f.HiddenField('actor_category')
-  actor_id = f.HiddenField('actor_id')
+  actor_id = f.IntegerField('actor_id', widget=wtforms.widgets.HiddenInput())
 
   starting_hp = f.IntegerField('Starting hp')
   initiative = f.IntegerField('Initiative value')
 
 class EncounterEventStartForm(w.Form):
-  event_id = f.HiddenField('event_id')
+  event_id = f.IntegerField('event_id', widget=wtforms.widgets.HiddenInput())
 
   initiative = f.IntegerField('Initiative value')
 

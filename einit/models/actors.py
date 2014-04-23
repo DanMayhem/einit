@@ -32,6 +32,9 @@ class Actor(object):
   def get_initiative_modifier(self):
     return 0
 
+  def get_id(self):
+    return 0
+
 class Hero(Actor):
   def __init__(self, u, hm=None):
     if hm is None:
@@ -114,6 +117,9 @@ class Hero(Actor):
 
   def get_initiative_modifier(self):
     return self.initiative_modifier
+
+  def get_reference_id(self):
+    return self.get_id()
 
 class Monster(Actor):
   def __init__(self, u, mm=None):

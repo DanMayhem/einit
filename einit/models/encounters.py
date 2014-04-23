@@ -38,6 +38,13 @@ class Encounter(object):
   def round(self, value):
     self.encounter_model.round = value
     
+  @property
+  def current_entry(self):
+    return self.encounter_model.current_entry
+  @current_entry.setter
+  def current_entry(self, value):
+    self.encounter_model.current_entry = value
+    
   def save(self):
     _db.session.add(self.encounter_model)
     _db.session.commit()
@@ -175,23 +182,64 @@ class Encounter(object):
     return sorted(
       map(
         lambda e: EncounterEntry(self, e), self.encounter_model.entries),
-      key=lambda x: x.initiative_order)
+      key=EncounterEntry.sort_str)
+
+  def get_entry_by_id(self, id):
+    rval = None
+    for entry in self.get_encounter_entries():
+      if entry.get_id() == id:
+        rval = entry
+        break
+    return entry
+
+  def get_current_entry(self):
+    return self.get_entry_by_id(self.current_entry)
+
+  def get_next_entry_id(self):
+    round = self.round
+    entries = self.get_encounter_entries()
+    for i in reversed(range(0,len(entries))):
+      if self.get_current_entry().category == entries[i].category and self.get_current_entry().reference_id==entries[i].reference_id:
+        break
+    i = i+1
+    if i >= len(entries):
+      i=0
+      round = round + 1
+    return (round, entries[i].get_id())
+
+  def get_prev_entry_id(self):
+    round = self.round
+    entries = self.get_encounter_entries()
+    for i in range(0,len(entries)):
+      if self.get_current_entry().category == entries[i].category and self.get_current_entry().reference_id==entries[i].reference_id:
+        break
+    i = i-1
+    if i <0:
+      round = round - 1
+    return (round, entries[i].get_id())
+
+  def set_current_event(self, round, entry_id):
+    self.round = round
+    self.current_entry = entry_id
+    self.save()
 
   def abandon(self):
     self.round=0
+    self.current_entry = 0
     for e in self.get_encounter_entries():
       e.destroy()
     self.save()
 
-  def start(self, events):
+  def start(self, entries):
     """initializes the encounter"""
     #first delete any leftovers from previous runs of the encounter
     self.abandon()
     self.round=1
-    events.sort()
-    for i in range(0,len(events)):
-      events[i].initiative_order = i
-      events[i].save()
+    entries.sort(key=EncounterEntry.sort_str)
+    for i in range(0,len(entries)):
+      entries[i].initiative_order = i
+      entries[i].save()
+    self.current_entry = entries[0].get_id()
     self.save()
 
 class EncounterEvent(object):
@@ -229,6 +277,7 @@ class EncounterEvent(object):
 
 class EncounterEntry(object):
   def __init__(self, e, ee=None):
+    self._sort_string = None
     if ee is None:
       self.encounter_entry = db.EncounterEntryModel()
       self.encounter_entry.encounter_id = e.get_id()
@@ -296,6 +345,18 @@ class EncounterEntry(object):
   def reference_id(self, value):
     self.encounter_entry.reference_id = value
 
+  def sort_str(self):
+    if self._sort_string is None:
+      self._sort_string = "%3d%1d%9d%2d"%(
+        999-self.encounter_entry.initiative,
+        _category_rank[self.encounter_entry.category],
+        self.encounter_entry.reference_id,
+        self.encounter_entry.spawn_index)
+    return self._sort_string
+
+  def get_id(self):
+    return int(self.encounter_entry.id)
+
   def save(self):
     _db.session.add(self.encounter_entry)
     _db.session.commit()
@@ -303,16 +364,4 @@ class EncounterEntry(object):
   def destroy(self):
     _db.session.delete(self.encounter_entry)
     _db.session.commit()
-
-  def __lt__(self, other):
-    lhs = self.encounter_entry
-    rhs = other.encounter_entry
-    if lhs.initiative == rhs.initiative:
-      if lhs.category==rhs.category:
-        if lhs.reference_id==rhs.reference_id:
-          return lhs.spawn_index < rhs.spawn_index
-        return lhs.reference_id < rhs.reference_id
-      return self._category_rank[lhs.category]<self._category_rank[rhs.category]
-    return lhs.initiative<rhs.initiative
-
 

@@ -597,6 +597,9 @@ def start_encounter(encounter_id):
     while len(form.actors) > 0:
       f = form.actors.pop_entry()
       actor = encounter.get_actor_by_category_id(f.actor_category.data, f.actor_id.data)
+      if actor is None:
+        flask.flash("Could not find actor")
+        return flask.redirect(flask.url_for('index'))
       for i in range(0,encounter.get_actor_spawn_count(actor)):
         e = einit.models.EncounterEntry(encounter)
         e.initiative = abs(f.initiative.data)
@@ -652,13 +655,22 @@ def abandon_encounter(encounter_id):
   encounter.abandon()
   return flask.redirect(flask.url_for("view_encounter",encounter_id=encounter_id))
  
-@app.route("/encounter/<int:encounter_id>/manage", methods=['GET',"POST"])
+@app.route("/encounter/<int:encounter_id>/manage", methods=['GET',"POST"], defaults={'active_entry_id':0})
+@app.route("/encounter/<int:encounter_id>/manage/entry/<int:active_entry_id>", methods=['GET',"POST"])
 @flask.ext.login.login_required
-def manage_encounter(encounter_id):
+def manage_encounter(encounter_id, active_entry_id):
   encounter = flask.ext.login.current_user.get_encounter_by_id(encounter_id)
   if encounter is None:
     flask.flash("Unable to find encounter","warning")
     return flask.redirect(flask.url_for('index'))
-  return flask.render_template("manage_encounter.html",encounter=encounter)
+  return flask.render_template("manage_encounter.html",encounter=encounter, active_entry_id=active_entry_id)
 
-
+@app.route("/encounter/<int:encounter_id>/entry/<int:round>/<int:entry_id>", methods=['GET','PUT','POST','PATCH'])
+@flask.ext.login.login_required
+def goto_entry(encounter_id, round, entry_id):
+  encounter = flask.ext.login.current_user.get_encounter_by_id(encounter_id)
+  if encounter is None:
+    flask.flash("Unable to find encounter","warning")
+    return flask.redirect(flask.url_for('index'))
+  encounter.set_current_event(round, entry_id)
+  return flask.redirect(flask.url_for('manage_encounter',encounter_id=encounter_id))

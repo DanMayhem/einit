@@ -77,16 +77,18 @@
     <div class="monster-left">
       {% if encounter.round > 0 %}
         <p><strong>Encounter in Progress</strong></p>
-        <p>{{util.build_link("View encounter","#","btn btn-primary btn-xs")}}</p>
-        <p>{{util.build_link("Manage encounter",url_for("manage_encounter",encounter_id=encounter.get_id()),"btn btn-success btn-xs")}}</p>
-        <p>{{util.build_link("Abandon encounter",url_for("abandon_encounter",encounter_id=encounter.get_id()),"btn btn-danger btn-xs")}}</p>
+        <div class="btn-group-vertical">
+          {{util.build_link("View encounter","#","btn btn-primary btn-xs")}}
+          {{util.build_link("Manage encounter",url_for("manage_encounter",encounter_id=encounter.get_id()),"btn btn-success btn-xs")}}
+          {{util.build_link("Abandon encounter",url_for("abandon_encounter",encounter_id=encounter.get_id()),"btn btn-danger btn-xs")}}
+        </div>
       {%else%}
-        <p>{{util.build_link("Start encounter",url_for('start_encounter',encounter_id=encounter.get_id()),"btn btn-success btn-xs")}}
+        {{util.build_link("Start encounter",url_for('start_encounter',encounter_id=encounter.get_id()),"btn btn-success btn-xs")}}
       {%endif%}
     </div>
-    <div class="monster-right">
-      <p>{{util.build_link("Edit encounter",url_for('edit_encounter',encounter_id=encounter.get_id()),"btn btn-primary btn-xs")}}</p>
-      <p>{{util.build_link("Delete encounter",url_for('destroy_encounter',encounter_id=encounter.get_id()),"btn btn-danger btn-xs")}}</p>
+    <div class="monster-right btn-group-vertical">
+      {{util.build_link("Edit encounter",url_for('edit_encounter',encounter_id=encounter.get_id()),"btn btn-primary btn-xs")}}
+      {{util.build_link("Delete encounter",url_for('destroy_encounter',encounter_id=encounter.get_id()),"btn btn-danger btn-xs")}}
     </div>
   </div>
 </div>

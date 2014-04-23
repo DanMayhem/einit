@@ -108,10 +108,10 @@
   </div>
   {% if editable == True %}
   <div class="panel-footer monster-panel">
-    <div class="monster-right">
-      <p>{{build_link("Add an action",url_for("create_monster_action",monster_id=m.get_id()),"btn btn-xs btn-success")}}</p>
-      <p>{{build_link("Edit monster",url_for("edit_monster", monster_id=m.get_id()), "btn btn-xs btn-success")}}<p>
-      <p>{{build_link("Delete monster",url_for("destroy_monster", monster_id=m.get_id()), "btn btn-xs btn-danger")}}<p>
+    <div class="monster-right btn-group-vertical">
+      {{build_link("Edit monster",url_for("edit_monster", monster_id=m.get_id()), "btn btn-xs btn-success")}}
+      {{build_link("Add an action",url_for("create_monster_action",monster_id=m.get_id()),"btn btn-xs btn-success")}}
+      {{build_link("Delete monster",url_for("destroy_monster", monster_id=m.get_id()), "btn btn-xs btn-danger")}}
    </div>
   </div>
   {%endif%}
@@ -158,8 +158,10 @@
     <span class="glyphicon glyphicon-asterisk"> </span> <strong>Aura</strong> {{action.aura_range}}
     {%endif%}
     {{display_recharge(action.recharge)}}
-    {{build_link("Delete Action",url_for("destroy_monster_action",monster_id=action.monster_id, action_id=action.get_id()),"btn btn-danger btn-xs pull-right")}}
-    {{build_link("Edit Action",url_for("edit_monster_action",monster_id=action.monster_id, action_id=action.get_id()),"btn btn-success btn-xs pull-right")}}
+    <div class="btn-group btn-group-xs pull-right">
+      {{build_link("Edit Action",url_for("edit_monster_action",monster_id=action.monster_id, action_id=action.get_id()),"btn btn-success")}}
+      {{build_link("Delete Action",url_for("destroy_monster_action",monster_id=action.monster_id, action_id=action.get_id()),"btn btn-danger")}}
+    </div>
   </div>
   <div>
     {% if action.trigger|trim %}
