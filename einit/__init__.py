@@ -38,6 +38,9 @@ login_manager = flask.ext.login.LoginManager(app) #login manager
 import einit.views
 import einit.models
 
+app.config['status_list'] = einit.models.status_list
+app.config['status_map'] = einit.models.status_details
+
 #set login manager options:
 login_manager.login_message_category='warning'
 login_manager.anonymous_user=einit.models.AnonymousUser
@@ -663,7 +666,10 @@ def manage_encounter(encounter_id, active_entry_id):
   if encounter is None:
     flask.flash("Unable to find encounter","warning")
     return flask.redirect(flask.url_for('index'))
-  return flask.render_template("manage_encounter.html",encounter=encounter, active_entry_id=active_entry_id)
+  if encounter.round == 0:
+    flask.flash("Encounter not in progress","warning")
+    return flask.redirect(flask.url_for('view_encounter',encounter_id=encounter_id))
+  return flask.render_template("manage_encounter.html",encounter=encounter, active_entry_id=active_entry_id,hp_form=einit.views.ModifyHitPointsForm())
 
 @app.route("/encounter/<int:encounter_id>/entry/<int:round>/<int:entry_id>", methods=['GET','PUT','POST','PATCH'])
 @flask.ext.login.login_required
@@ -672,5 +678,110 @@ def goto_entry(encounter_id, round, entry_id):
   if encounter is None:
     flask.flash("Unable to find encounter","warning")
     return flask.redirect(flask.url_for('index'))
+  if encounter.round == 0:
+    flask.flash("Encounter not in progress","warning")
+    return flask.redirect(flask.url_for('view_encounter',encounter_id=encounter_id))
   encounter.set_current_event(round, entry_id)
   return flask.redirect(flask.url_for('manage_encounter',encounter_id=encounter_id))
+
+@app.route("/encounter/<int:encounter_id>/manage/entry/<int:entry_id>/make_visible", methods=['GET','POST','PUT','PATCH'])
+@flask.ext.login.login_required
+def make_visible(encounter_id, entry_id):
+  return set_visibility(encounter_id, entry_id, True)
+
+@app.route("/encounter/<int:encounter_id>/manage/entry/<int:entry_id>/make_invisible", methods=['GET','POST','PUT','PATCH'])
+@flask.ext.login.login_required
+def make_invisible(encounter_id, entry_id):
+  return set_visibility(encounter_id, entry_id, False)
+
+def set_visibility(encounter_id, entry_id, visibility):
+  encounter = flask.ext.login.current_user.get_encounter_by_id(encounter_id)
+  if encounter is None:
+    flask.flash("Unable to find encounter","warning")
+    return flask.redirect(flask.url_for('index'))
+  if encounter.round == 0:
+    flask.flash("Encounter not in progress","warning")
+    return flask.redirect(flask.url_for('view_encounter',encounter_id=encounter_id))
+  entry = encounter.get_entry_by_id(entry_id)
+  if entry is None:
+    flask.flash("unable to find entry","warning")
+    return flask.redirect(flask.url_for('manage_encounter',encounter_id=encounter_id))
+  entry.visible = visibility
+  entry.save()
+  return flask.redirect(flask.url_for('manage_encounter',encounter_id=encounter_id,active_entry_id=entry_id))
+
+@app.route("/encounter/<int:encounter_id>/manage/entry/<int:entry_id>/spawn", methods=['GET','POST','PUT','PATCH'])
+@flask.ext.login.login_required
+def spawn_monster(encounter_id, entry_id):
+  encounter = flask.ext.login.current_user.get_encounter_by_id(encounter_id)
+  if encounter is None:
+    flask.flash("Unable to find encounter","warning")
+    return flask.redirect(flask.url_for('index'))
+  if encounter.round == 0:
+    flask.flash("Encounter not in progress","warning")
+    return flask.redirect(flask.url_for('view_encounter',encounter_id=encounter_id))
+  entry = encounter.get_entry_by_id(entry_id)
+  if entry is None:
+    flask.flash("unable to find entry","warning")
+    return flask.redirect(flask.url_for('manage_encounter',encounter_id=encounter_id))
+  if entry.category != "monster":
+    flask.flash("Can only spawn monsters","warning")
+    return flask.redirect(flask.url_for('manage_encounter',encounter_id=encounter_id, active_entry_id=entry_id))
+  monster = encounter.get_actor_by_category_id(entry.category,entry.reference_id)
+  encounter.spawn_monster(monster)
+  return flask.redirect(flask.url_for('manage_encounter',encounter_id=encounter_id, active_entry_id=entry_id))
+    
+@app.route("/encounter/<int:encounter_id>/manage/entry/<int:entry_id>/modify_hp",methods=['POST','PUT','GET'])
+@flask.ext.login.login_required
+def mod_hp(encounter_id, entry_id):
+  encounter = flask.ext.login.current_user.get_encounter_by_id(encounter_id)
+  if encounter is None:
+    flask.flash("Unable to find encounter","warning")
+    return flask.redirect(flask.url_for('index'))
+  if encounter.round == 0:
+    flask.flash("Encounter not in progress","warning")
+    return flask.redirect(flask.url_for('view_encounter',encounter_id=encounter_id))
+  entry = encounter.get_entry_by_id(entry_id)
+  if entry is None:
+    flask.flash("unable to find entry","warning")
+    return flask.redirect(flask.url_for('manage_encounter',encounter_id=encounter_id))
+  hp_form = einit.views.ModifyHitPointsForm()
+  if hp_form.validate_on_submit():
+    if hp_form.action.data=='damage':
+      entry.apply_damage(hp_form.amount.data)
+    elif hp_form.action.data=='temp_hp':
+      entry.apply_temp_hp(hp_form.amount.data)
+    elif hp_form.action.data=='heal':
+      entry.apply_heal(hp_form.amount.data)
+    entry.save()
+  else:
+    for fieldname, error_list in hp_form.errors:
+      for error in error_list:
+        flask.flash("%s: %s"%(fieldname, error),"warning")
+  return flask.redirect(flask.url_for('manage_encounter',encounter_id=encounter_id, active_entry_id=entry_id))
+
+@app.route("/encounter/<int:encounter_id>/manage/entry/<int:entry_id>/clear_status/<string:status_str>",methods=['POST','PUT','GET','DELETE'])
+@flask.ext.login.login_required
+def clear_status(encounter_id, entry_id, status_str):
+  return status_action(encounter_id, entry_id, status_str, einit.models.EncounterEntry.clear_status)
+
+@app.route("/encounter/<int:encounter_id>/manage/entry/<int:entry_id>/set_status/<string:status_str>",methods=['POST','PUT','GET'])
+@flask.ext.login.login_required
+def set_status(encounter_id, entry_id, status_str):
+  return status_action(encounter_id, entry_id, status_str, einit.models.EncounterEntry.set_status)
+
+def status_action(encounter_id, entry_id, status_str, status_functor):
+  encounter = flask.ext.login.current_user.get_encounter_by_id(encounter_id)
+  if encounter is None:
+    flask.flash("Unable to find encounter","warning")
+    return flask.redirect(flask.url_for('index'))
+  if encounter.round == 0:
+    flask.flash("Encounter not in progress","warning")
+    return flask.redirect(flask.url_for('view_encounter',encounter_id=encounter_id))
+  entry = encounter.get_entry_by_id(entry_id)
+  if entry is None:
+    flask.flash("unable to find entry","warning")
+    return flask.redirect(flask.url_for('manage_encounter',encounter_id=encounter_id))
+  status_functor(entry, status_str)
+  entry.save()
+  return flask.redirect(flask.url_for('manage_encounter',encounter_id=encounter_id, active_entry_id=entry_id))

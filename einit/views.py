@@ -151,3 +151,11 @@ class EncounterStartForm(w.Form):
   events = f.FieldList(f.FormField(EncounterEventStartForm,""),"")
 
   start = f.SubmitField('Start encounter')
+
+class ModifyHitPointsForm(w.Form):
+  amount = f.IntegerField("")
+  action = f.SelectField('Action',choices=[
+    ('damage','Damage'),
+    ('temp_hp','Temp HP'),
+    ('heal','Heal')
+    ])

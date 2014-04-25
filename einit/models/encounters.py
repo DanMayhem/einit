@@ -1,5 +1,6 @@
 #!python
 import hashlib
+import sqlalchemy.orm.exc
 
 import einit.models
 import db
@@ -53,6 +54,7 @@ class Encounter(object):
     return self.encounter_model.id
 
   def destroy(self):
+    self.abandon()
     _db.session.delete(self.encounter_model)
     _db.session.commit()
 
@@ -146,6 +148,38 @@ class Encounter(object):
     am.encounter_id = self.encounter_model.id
     _db.session.add(am)
     _db.session.commit()
+    self.abandon()
+
+  def spawn_monster(self, monster):
+    if self.round == 0:
+      return
+    if monster.get_category()!='monster':
+      return
+    am = self._find_actor('monster',monster.get_id())
+    if am is None:
+      return
+    am.spawn_count = am.spawn_count + 1
+    _db.session.add(am) #update the spawn count
+    _db.session.commit()
+    entry = EncounterEntry(self)
+    entry.spawn_index = am.spawn_count-1
+    entry.hp = monster.get_max_hp()
+    entry.temp_hp = 0
+    entry.visible = True
+    entry.category="monster"
+    entry.reference_id = monster.get_id()
+    entries = self.get_encounter_entries()
+    #copy initiative value from another entry
+    for e in entries:
+      if e.category==entry.category and e.reference_id==entry.reference_id:
+        entry.initiative = e.initiative
+    entry.save()
+    entries.append(entry)
+    entries.sort(key=EncounterEntry.sort_str)
+    for i in range(0,len(entries)):
+      entries[i].initiative_order = i
+      entries[i].save()
+    self.save()
 
   def remove_hero(self, h):
     self.remove_actor(h)
@@ -159,6 +193,7 @@ class Encounter(object):
       else:
         _db.session.add(am)
       _db.session.commit()
+    self.abandon()
 
   def get_events(self):
     return sorted(
@@ -171,6 +206,7 @@ class Encounter(object):
     ee.name = name
     ee.description = description
     ee.save()
+    self.abandon()
 
   def get_event_by_id(self, event_id):
     for e in self.get_events():
@@ -365,3 +401,58 @@ class EncounterEntry(object):
     _db.session.delete(self.encounter_entry)
     _db.session.commit()
 
+  def apply_damage(self, hp):
+    if self.temp_hp >= hp:
+      self.temp_hp -= hp
+    else:
+      self.temp_hp = 0
+      self.hp -= (hp-self.temp_hp)
+    try:
+      encounter = Encounter(None,
+      _db.session.query(db.EncounterModel).filter(db.EncounterModel.id == self.encounter_entry.encounter_id).one())
+    except sqlalchemy.orm.exc.NoResultFound:
+      return None
+    except sqlalchemy.orm.exc.MultipleResultsFound:
+      return None
+
+    actor = encounter.get_actor_by_category_id(self.category,self.reference_id)
+
+    if actor and self.hp < (actor.get_max_hp()/2):
+      self.set_status('bloodied')
+
+  def apply_heal(self, hp):
+    try:
+      encounter = Encounter(None,
+      _db.session.query(db.EncounterModel).filter(db.EncounterModel.id == self.encounter_entry.encounter_id).one())
+    except sqlalchemy.orm.exc.NoResultFound:
+      return None
+    except sqlalchemy.orm.exc.MultipleResultsFound:
+      return None
+
+    actor = encounter.get_actor_by_category_id(self.category,self.reference_id)
+
+    if (self.hp+hp) > actor.get_max_hp():
+      self.hp = actor.get_max_hp()
+    else:
+      self.hp += hp
+
+  def apply_temp_hp(self, hp):
+    self.temp_hp += hp
+
+  def set_status(self, status):
+    if not self.has_status(status) and status in einit.models._status_list:
+      eesm = db.EncounterEntryStatusModel()
+      eesm.status = status
+      eesm.encounter_entry_id = self.encounter_entry.id
+      _db.session.add(eesm)
+
+  def clear_status(self, status):
+    for s in self.encounter_entry.statuses:
+      if s.status == status:
+        _db.session.delete(s)
+
+  def has_status(self, status):
+    return status in (self.get_statuses())
+
+  def get_statuses(self):
+    return map(lambda s: s.status, self.encounter_entry.statuses)

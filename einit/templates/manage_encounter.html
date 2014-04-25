@@ -3,15 +3,16 @@
 {% import "util.html" as util %}
 
 {% block main_content %}
-<!--start main content-->
+<!--start main content {{active_entry_id}}-->
 {% if active_entry_id == 0 %}
   {%set active_entry_id = encounter.current_entry %}
 {%endif%}
+{%set active_entry = encounter.get_entry_by_id(active_entry_id)%}
 <div class="row">
   <div class="col-sm-4">
-    <div class="panel panel-default">
+    <div class="panel panel-primary">
       <div class="panel-heading">
-        Intiative Order - Round {{encounter.round}}
+        <strong>Intiative Order</strong> Round {{encounter.round}}
       </div>
       <div class="list-group">
         {% for entry in encounter.get_encounter_entries() %}
@@ -34,7 +35,91 @@
       </div>
     </div>
   </div>
-  <div class="col-sm-4">
+  <div class="col-sm-6">
+    <!--
+    {{active_entry.category}}
+    -->
+    {%set actor = encounter.get_actor_by_category_id(active_entry.category, active_entry.reference_id)%}
+    {%if active_entry.category=="monster"%}
+      {{util.display_monster(actor,False)}}
+    {%elif active_entry.category=="hero"%}
+      {{util.display_hero(actor)}}
+    {%elif active_entry.category=='event'%}
+      {%set event = encounter.get_event_by_id(active_entry.reference_id)%}
+      <div class="panel panel-primary">
+        <div class="panel-heading">
+          {{event.name}}
+        </div>
+        <div class="panel-body">
+          {{event.description}}
+        </div>
+      </div>
+    {%endif%}
+  </div>
+  <div class="col-sm-2">
+    <div class="panel panel-primary">
+      <div class="panel-heading">
+        <strong>Actions</strong>
+      </div>
+      <div class="list-group">
+        {% if active_entry.category in ('hero','monster') %}
+          <div class="list-group-item list-group-item-info">
+            <strong>HP</strong>
+          </div>
+          <div class="list-group-item">
+            <form action="{{url_for('mod_hp',encounter_id=encounter.get_id(), entry_id=active_entry_id)}}" method="POST" class="">
+              <div class="input-group">
+                {{hp_form.csrf_token}}
+                {{hp_form.amount(class="form-control")}}
+                <br/>
+                <div class="btn-group-vertical btn-group-xs">
+                  <button type="submit" name="action" value="damage" class="btn btn-danger">Damage</button>
+                  <button type="submit" name="action" value="temp_hp" class="btn btn-warning">Temp HP</button>
+                  <button type="submit" name="action" value="heal" class="btn btn-success">Heal</button>
+                </div>
+              </div>
+            </form>
+          </div>    
+          <div class="list-group-item list-group-item-info">
+            <strong>Status</strong>
+          </div>
+          <div class="list-group-item">
+            <div class="btn-group-vertical btn-group-default btn-group-xs">
+              {% set status_map = config.status_map %}
+              {% set addl_class = "" %}
+              {% for status in config.status_list %}
+                {%if active_entry.has_status(status)%}
+                  <a href="{{url_for('clear_status',encounter_id=encounter.get_id(),entry_id=active_entry_id,status_str=status)}}" class="btn btn-default active">
+                    <span class="{{status_map[status]['glyph']}}"> </span>
+                    {{status_map[status]['tag']}}
+                  </a>
+                {%else%}
+                  <a href="{{url_for('set_status',encounter_id=encounter.get_id(),entry_id=active_entry_id,status_str=status)}}" class="btn btn-default">
+                    <span class="{{status_map[status]['glyph']}}"> </span>
+                    {{status_map[status]['tag']}}
+                  </a>
+                {%endif%}
+              {%endfor%}
+            </div>
+          </div>    
+        {%endif%}
+        <div class="list-group-item list-group-item-info">
+          <strong>Other</strong>
+        </div>
+        <div class="list-group-item">
+          <div class="btn-group-vertical btn-group-default btn-group-xs">
+            {% if active_entry.visible == True %}
+              {{util.build_link('Hide Entry',url_for('make_invisible',encounter_id=encounter.get_id(),entry_id=active_entry_id),"btn btn-default btn-xs")}}
+            {% else %}
+              {{util.build_link('Show Entry',url_for('make_visible',encounter_id=encounter.get_id(),entry_id=active_entry_id),"btn btn-default btn-xs")}}
+            {%endif%}
+            {% if active_entry.category=="monster"%}
+              {{util.build_link('Spawn another',url_for('spawn_monster',encounter_id=encounter.get_id(), entry_id=active_entry_id),'btn btn-default btn-xs')}}
+            {%endif%}
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
 </div>
@@ -80,36 +165,32 @@
         {%endif%}
       </div>
       <div>
-        <span class="glyphicon glyphicon-cloud"/> <span class="glyphicon glyphicon-camera"/>
+        {% for status in actor_entry.get_statuses() %}
+          <abbr title="{{config.status_map[status]['tag']}}: {{config.status_map[status]['description']}}">
+            <span class="{{config.status_map[status]['glyph']}}">
+            </span>
+          </abbr>
+        {% endfor %}
       </div>
     </div>
   </div>
   <div class="row">
     <div class="col-xs-12">
-      <div class="progress">
-        <div class="progress-bar progress-bar-success" style="width: {{(100*actor_entry.hp)//actor.get_max_hp()}}%">
-          {{actor_entry.hp}}
-        </div>
-        {%if actor_entry.temp_hp > 0 %}
-        <div class="progress-bar progress-bar-warning" style="width: {{(100*actor_entry.temp_hp)//actor.get_max_hp()}}%">
-          {{actor_entry.temp_hp}}
-        </div>
-        {%endif%}
-      </div>
+      {{health_bar(actor.get_max_hp(), actor_entry.hp, actor_entry.temp_hp)}}
     </div>
   </div>
   {% if actor_entry.category=='monster' %}
     <div class="row">
-      <div class="col-xs-3 text-center">
+      <div class="col-xs-2 text-center label label-default">
         <strong>AC</strong><br/>{{actor.ac}}
       </div>
-      <div class="col-xs-3 text-center">
+      <div class="col-xs-3 col-xs-offset-1 text-center label label-default">
         <strong>Fortitude</strong><br/>{{actor.fortitude}}
       </div>
-      <div class="col-xs-3 text-center">
+      <div class="col-xs-2 col-xs-offset-1 text-center label label-default">
         <strong>Reflex</strong><br/>{{actor.reflex}}
       </div>
-      <div class="col-xs-3 text-center">
+      <div class="col-xs-2 col-xs-offset-1 text-center label label-default">
         <strong>Will</strong><br/>{{actor.will}}
       </div>
     </div>
@@ -125,7 +206,7 @@
   {% set addl_li_class = "list-group-item-info" %}
   {% set glyph_class="glyphicon-play" %}
 {% endif %}
-{% if active_entry_id==event.get_id()%}
+{% if active_entry_id==entry.get_id()%}
   {%set addl_li_class = "active "+addl_li_class %}
 {% elif active_entry_id == 0 and entry.get_id() == encounter.current_entry %}
   {%set addl_li_class = "active "+addl_li_class %}
@@ -135,8 +216,40 @@
 {{event.get_id()}}
 {{encounter.current_entry}}
 -->
-<a href="{{url_for('manage_encounter',encounter_id=encounter.get_id(),active_entry_id=event.get_id())}}" class="list-group-item {{addl_li_class}}">
+<a href="{{url_for('manage_encounter',encounter_id=encounter.get_id(),active_entry_id=entry.get_id())}}" class="list-group-item {{addl_li_class}}">
   <span class="glyphicon {{glyph_class}}"> </span><strong>{{event.name}}</strong>
 </a>
 {%endmacro%}
 
+{% macro health_bar(max_hp, actual_hp, temp_hp)%}
+  {% if (actual_hp + temp_hp) > max_hp %}
+    {% set max_hp = (actual_hp + temp_hp) %}
+  {%endif%}
+  {% set hp_pcnt = (100* actual_hp) // max_hp %}
+  {% set temp_pcnt = (100*temp_hp) // max_hp %}
+  {% set hp_pcnt = 5 if hp_pcnt < 5 else hp_pcnt %}
+  {% if (temp_pcnt < 5 and temp_hp > 0) %}
+    {% set temp_pcnt = 5 %}
+  {% endif %}
+  {% if (hp_pcnt + temp_pcnt) > 100 %}
+    {% set hp_pcnt = 100-temp_pcnt if hp_pcnt > temp_pcnt else hp_pcnt%}
+    {% set temp_pcnt = 100-hp_pcnt if temp_pcnt > hp_pcnt else temp_pcnt%}
+  {% endif %}
+
+  <div class="progress">
+    {% if actual_hp > 0 %}
+      <div class="progress-bar progress-bar-success" style="width: {{hp_pcnt}}%">
+        {{actual_hp}}
+      </div>
+      {%if temp_hp > 0 %}
+      <div class="progress-bar progress-bar-warning" style="width: {{temp_pcnt}}%">
+        {{temp_hp}}
+      </div>
+      {%endif%}
+    {%else%}
+      <div class="progress-bar progress-bar-danger" style="width: 100%">
+        {{actual_hp}}
+      </div>
+    {%endif%}
+  </div>
+{%endmacro%}

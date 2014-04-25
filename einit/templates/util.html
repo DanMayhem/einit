@@ -6,6 +6,33 @@
   <img src="https://www.gravatar.com/avatar/{{c.get_gravatar_hash()}}?s=30&d=retro" alt="avatar" xheight="35" xwidth="35" class="img-rounded" />
 {%- endmacro %}
 
+{% macro display_hero(h) %}
+<div class="panel panel-primary">
+  <div class="panel-heading">
+    <div class="row">
+      <div class="col-xs-8">
+        <strong>{{h.hero_name}}</strong><br/>
+        <small>{{h.player_name}}</small>
+      </div>
+      <div class="col-xs-4 text-right">
+        <strong>Level: </strong>{{h.level}}
+      </div>
+    </div>
+  </div>
+  <div class="panel-body">
+    <div class="row">
+      <div class="col-xs-8">
+        <strong>HP: </strong>{{h.max_hp}}
+        <strong>Bloodied: </strong>{{h.max_hp//2}}
+      </div>
+      <div class="col-xs-4 text-right">
+        <strong>Initiative: </strong>+{{h.initiative_modifier}}
+      </div>
+    </div>
+  </div>
+</div>
+{% endmacro %}
+
 {% macro display_monster(m, editable=True) %}
 <div class="panel panel-primary">
   <div class="panel-heading monster-panel">
@@ -50,8 +77,8 @@
     {%endif%}
 
     {% if m.get_standards()|length > 0 %}
-      <a href="#" class="list-group-item active">
-        Standard
+      <a class="list-group-item active">
+        <strong>Standard</strong>
       </a>
       {% for standard in m.get_standards() %}
         {{display_action(standard, editable)}}
@@ -59,8 +86,8 @@
     {%endif%}
 
     {% if m.get_minors()|length > 0 %}
-      <a href="#" class="list-group-item active">
-        Minor
+      <a class="list-group-item active">
+        <strong>Minor</strong>
       </a>
       {% for minor in m.get_minors() %}
         {{display_action(minor, editable)}}
@@ -68,8 +95,8 @@
     {%endif%}
 
     {% if m.get_moves()|length > 0 %}
-      <a href="#" class="list-group-item active">
-        Moves
+      <a class="list-group-item active">
+        <strong>Moves</strong>
       </a>
       {% for move in m.get_moves() %}
         {{display_action(move, editable)}}
@@ -77,8 +104,8 @@
     {%endif%}
 
     {% if m.get_frees()|length > 0 %}
-      <a href="#" class="list-group-item active">
-        Free actions
+      <a class="list-group-item active">
+        <strong>Free actions</strong>
       </a>
       {% for free in m.get_frees() %}
         {{display_action(free, editable)}}
@@ -86,8 +113,8 @@
     {%endif%}
 
     {% if m.get_triggereds()|length > 0 %}
-      <a href="#" class="list-group-item active">
-        Triggered Actions
+      <a class="list-group-item active">
+        <strong>Triggered Actions</strong>
       </a>
       {% for triggered in m.get_triggereds() %}
         {{display_action(triggered, editable)}}
@@ -95,8 +122,8 @@
     {%endif%}
 
     {% if m.get_others()|length > 0 %}
-      <a href="#" class="list-group-item active">
-        Special Actions
+      <a class="list-group-item active">
+        <strong>Special Actions</strong>
       </a>
       {% for other in m.get_others() %}
         {{display_action(other, editable)}}
@@ -158,10 +185,12 @@
     <span class="glyphicon glyphicon-asterisk"> </span> <strong>Aura</strong> {{action.aura_range}}
     {%endif%}
     {{display_recharge(action.recharge)}}
+    {% if editable == True %}
     <div class="btn-group btn-group-xs pull-right">
       {{build_link("Edit Action",url_for("edit_monster_action",monster_id=action.monster_id, action_id=action.get_id()),"btn btn-success")}}
       {{build_link("Delete Action",url_for("destroy_monster_action",monster_id=action.monster_id, action_id=action.get_id()),"btn btn-danger")}}
     </div>
+    {%endif%}
   </div>
   <div>
     {% if action.trigger|trim %}
