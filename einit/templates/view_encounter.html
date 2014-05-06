@@ -78,7 +78,7 @@
       {% if encounter.round > 0 %}
         <p><strong>Encounter in Progress</strong></p>
         <div class="btn-group-vertical">
-          {{util.build_link("View encounter","#","btn btn-primary btn-xs")}}
+          {{util.build_link("View encounter",url_for("encounter_app", encounter_id=encounter.get_id()),"btn btn-primary btn-xs")}}
           {{util.build_link("Manage encounter",url_for("manage_encounter",encounter_id=encounter.get_id()),"btn btn-success btn-xs")}}
           {{util.build_link("Abandon encounter",url_for("abandon_encounter",encounter_id=encounter.get_id()),"btn btn-danger btn-xs")}}
         </div>

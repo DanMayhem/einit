@@ -785,3 +785,15 @@ def status_action(encounter_id, entry_id, status_str, status_functor):
   status_functor(entry, status_str)
   entry.save()
   return flask.redirect(flask.url_for('manage_encounter',encounter_id=encounter_id, active_entry_id=entry_id))
+
+@app.route("/encounter/<int:encounter_id>/view", methods=["GET"])
+@flask.ext.login.login_required
+def encounter_app(encounter_id):
+  encounter = flask.ext.login.current_user.get_encounter_by_id(encounter_id)
+  if encounter is None:
+    flask.flash("Unable to find encounter","warning")
+    return flask.redirect(flask.url_for('index'))
+  if encounter.round == 0:
+    flask.flash("Encounter not in progress","warning")
+    return flask.redirect(flask.url_for('view_encounter',encounter_id=encounter_id))
+  return flask.render_template('encounter_app.html',encounter=encounter)

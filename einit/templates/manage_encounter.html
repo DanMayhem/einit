@@ -140,6 +140,9 @@
 {% elif active_entry_id == 0 and actor_entry.get_id() == encounter.current_entry%}
   {%set addl_li_class = "active "+addl_li_class %}
 {% endif %}
+{% if not actor_entry.visible %}
+  {%set glyph_class = "glyphicon-eye-close" %}
+{% endif %}
 <a href="{{url_for('manage_encounter',encounter_id=encounter.get_id(),active_entry_id=actor_entry.get_id())}}" class="list-group-item {{addl_li_class}}">
   <!--
   {{actor.get_id()}}
@@ -211,13 +214,16 @@
 {% elif active_entry_id == 0 and entry.get_id() == encounter.current_entry %}
   {%set addl_li_class = "active "+addl_li_class %}
 {% endif %}
+{% if not entry.visible %}
+  {%set glyph_class = "glyphicon-eye-close" %}
+{% endif %}
 <!--
 {{active_entry_id}}
 {{event.get_id()}}
 {{encounter.current_entry}}
 -->
 <a href="{{url_for('manage_encounter',encounter_id=encounter.get_id(),active_entry_id=entry.get_id())}}" class="list-group-item {{addl_li_class}}">
-  <span class="glyphicon {{glyph_class}}"> </span><strong>{{event.name}}</strong>
+  <span class="glyphicon {{glyph_class}}"> </span> <strong>{{event.name}}</strong>
 </a>
 {%endmacro%}
 

@@ -45,6 +45,14 @@ _status_map = {
     grants_combat_advantage:False,
     can_flank:True,
     can_act:True
+  },
+  'ongoing_damage':{
+    tag:'DOT',
+    glyph:'glyphicon glyphicon-time',
+    description:"Damage taken at the start of turn",
+    grants_combat_advantage:False,
+    can_flank:True,
+    can_act:True
   }
 }
 
