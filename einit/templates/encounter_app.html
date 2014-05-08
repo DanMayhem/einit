@@ -32,9 +32,69 @@
 {% block scripts %}
   {{super()}}
   <script>
-    get_encounter_id = function() {
-      return {{encounter.get_id()}};
+    get_encounter_hash = function() {
+      return "{{encounter.get_encounter_hash_key()}}";
     }
   </script>
+  <script type="text/html" id="encounter-template">
+      <div class="panel-heading">
+        <h3 class="panel-title"><strong><%=title%></strong></h3>
+        <h3 class="panel-title"><em>Round: <%=round%></em></h3>
+      </div>
+      <ul class="list-group">
+      </ul>
+  </script>
+
+  <script type="text/html" id="entry-template">
+    <div class="row">
+      <div class="col-xs-1">
+        <span class="<%=prefix_glyph%>"> </span>
+      </div>
+      <div class="col-xs-2">
+        <% if (gravatar_url) { %>
+          <img src="<%=gravatar_url%>" width="30" height="30"/>
+        <% } %>
+        </div>
+      <div class="col-xs-8">
+        <strong><%= name %></strong>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-xs-8 col-xs-offset-3">
+        <% for(var i=0;i<status_count;i++) { %>
+          <abbr title="<%-status_list[i]['descr']%>">
+            <span class="<%=status_list[i]['glyph']%>"> </span>
+          </abbr>
+        <% } %>
+      </div>
+      <div class="row">
+        <div class="col-xs-8 col-xs-offset-3">
+          <% if (has_hp) { %>
+            <div class="progress">
+              <% if((actual_hp+temp_hp) > 0) { %>
+                <div class="progress-bar progress-bar-success" style="width: <%=hp_pcnt%>%;">
+                  <%=actual_hp%>
+                </div>
+                <% if (temp_hp > 0) { %>
+                  <div class="progress-bar progress-bar-warning" style="width: <%=temp_pcnt%>%;">
+                    <%=temp_hp%>
+                  </div>
+                <% } %>
+              <% } else { %>
+                <div class="progress-bar progress-bar-danger" style="width: 100%">
+                  <%=actual_hp%>
+                </div>
+              <%}%>
+            </div>
+          <%}%>
+        </div>
+      </div>  
+    </div>
+  </script>
+
+  <script src="{{url_for('static',filename='vendor/jquery.js')}}"></script>
+  <script src="{{url_for('static',filename='vendor/underscore.js')}}"></script>
+  <script src="{{url_for('static',filename='vendor/backbone.js')}}"></script>
+  <script src="{{url_for('static',filename='vendor/marionette.js')}}"></script>
   <script src="{{url_for('static',filename='js/view_encounter.js')}}"></script>
 {% endblock %}

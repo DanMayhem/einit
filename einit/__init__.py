@@ -786,14 +786,22 @@ def status_action(encounter_id, entry_id, status_str, status_functor):
   entry.save()
   return flask.redirect(flask.url_for('manage_encounter',encounter_id=encounter_id, active_entry_id=entry_id))
 
-@app.route("/encounter/<int:encounter_id>/view", methods=["GET"])
-@flask.ext.login.login_required
-def encounter_app(encounter_id):
-  encounter = flask.ext.login.current_user.get_encounter_by_id(encounter_id)
+@app.route("/observe/<string:encounter_hash_key>", methods=["GET"])
+def encounter_app(encounter_hash_key):
+  encounter = models.Encounter.get_encounter_by_hash(encounter_hash_key)
   if encounter is None:
     flask.flash("Unable to find encounter","warning")
     return flask.redirect(flask.url_for('index'))
+  encounter_id = encounter.get_id()
   if encounter.round == 0:
     flask.flash("Encounter not in progress","warning")
     return flask.redirect(flask.url_for('view_encounter',encounter_id=encounter_id))
   return flask.render_template('encounter_app.html',encounter=encounter)
+
+@app.route("/observe/<string:encounter_hash_key>.json")
+def encounter_json(encounter_hash_key):
+  encounter = models.Encounter.get_encounter_by_hash(encounter_hash_key)
+  if encounter is None:
+    flask.flash("Unable to find encounter","warning")
+    return flask.Response(response=flask.render_template("error_json.json"),mimetype="application/json")
+  return flask.json.jsonify(views.render_encounter_as_dict(encounter))

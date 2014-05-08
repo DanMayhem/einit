@@ -53,6 +53,14 @@ _status_map = {
     grants_combat_advantage:False,
     can_flank:True,
     can_act:True
+  },
+  'knocked_out':{
+    tag:'Knocked Out',
+    glyph:'glyphletters glyphletters-ko',
+    description:"Knocked out, must make death saving throws",
+    grants_combat_advantage:True,
+    can_flank:False,
+    can_act:False
   }
 }
 

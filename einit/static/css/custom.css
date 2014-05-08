@@ -38,7 +38,7 @@ body {
   display: inline-block;
   font-family: 'Arial Black';
   line-height: 1;
-  font-size:1.5em;
+  font-size:1.1em;
 }
 
 .glyphdnd {
@@ -116,6 +116,10 @@ body {
 
 .glyphdnd-dazed:before {
   content: "z";
+}
+
+.glyphletters-ko:before { 
+  content: "KO";
 }
 
 /*

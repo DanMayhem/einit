@@ -3,6 +3,8 @@ import wtforms as f
 import wtforms.validators as v
 import wtforms.widgets
 
+import einit.models
+
 class SignUpForm(w.Form):
   name = f.StringField('Name', validators=[
     v.InputRequired('Name is required field')
@@ -159,3 +161,57 @@ class ModifyHitPointsForm(w.Form):
     ('temp_hp','Temp HP'),
     ('heal','Heal')
     ])
+
+
+def render_encounter_as_dict(encounter):
+  e = {}
+  e["title"] = encounter.name
+  e["round"] = encounter.round
+  e["entries"] = []
+  for i in encounter.get_encounter_entries():
+    if i.visible:
+      ent = {}
+      ent['prefix_glyph']="glyphicon"
+      status_list = i.get_statuses()
+      ent['status_count'] = len(status_list)
+      ent['status_list'] = []
+      ent['has_hp'] = False
+      for status in status_list:
+        ent['status_list'].append({
+          'glyph': einit.models.status_details[status]['glyph'],
+          'descr': "%s: %s"%(einit.models.status_details[status]['tag'],einit.models.status_details[status]['description'])
+          })
+      if i.category == encounter.get_current_entry().category and i.reference_id == encounter.get_current_entry().reference_id :
+        ent['prefix_glyph']="glyphicon glyphicon-play"
+      if i.category == "event":
+        event = encounter.get_event_by_id(i.reference_id)
+        ent["name"]= event.name
+        ent['gravatar_url']=""
+      else:
+        actor = encounter.get_actor_by_category_id(i.category, i.reference_id)
+        ent["name"] = actor.get_display_name()
+        ent['gravatar_url'] = actor.get_gravatar_url()
+        if i.category == "hero":
+          ent["has_hp"] = True
+          max_hp = actor.get_max_hp()
+          actual_hp = i.hp
+          temp_hp = i.temp_hp
+          if (actual_hp+temp_hp) > max_hp:
+            max_hp = actual_hp + temp_hp
+          hp_pcnt = (100*actual_hp)/max_hp
+          temp_pcnt = (100*temp_hp)/max_hp
+          if hp_pcnt < 5:
+            hp_pcnt = 5
+          if temp_pcnt < 5 and temp_hp > 0:
+            temp_pcnt = 5
+          if (hp_pcnt + temp_pcnt)>100:
+            if hp_pcnt > temp_pcnt:
+              hp_pcnt = 100-temp_pcnt
+            else:
+              temp_pcnt = 100-hp_pcnt
+          ent['actual_hp']=actual_hp
+          ent['temp_hp']=temp_hp
+          ent['hp_pcnt']=hp_pcnt
+          ent['temp_pcnt']=temp_pcnt
+      e["entries"].append(ent)
+  return e

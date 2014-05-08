@@ -103,6 +103,7 @@ class EncounterModel(_db.Model):
   actors = sqlalchemy.orm.relationship("ActorModel")
   events = sqlalchemy.orm.relationship("EventModel")
   entries = sqlalchemy.orm.relationship("EncounterEntryModel", backref="encounter")
+  hash_key = _db.Column(_db.String(5), index=True)
 
   creator_id = _db.Column(_db.Integer,_db.ForeignKey('users.id'))
 

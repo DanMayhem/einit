@@ -243,7 +243,7 @@
   {% endif %}
 
   <div class="progress">
-    {% if actual_hp > 0 %}
+    {% if (actual_hp+temp_hp) > 0 %}
       <div class="progress-bar progress-bar-success" style="width: {{hp_pcnt}}%">
         {{actual_hp}}
       </div>

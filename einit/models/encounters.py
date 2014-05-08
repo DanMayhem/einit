@@ -1,5 +1,6 @@
 #!python
 import hashlib
+import random
 import sqlalchemy.orm.exc
 
 import einit.models
@@ -9,7 +10,6 @@ import users
 _db = db._db
 _category_rank={'hero':1,'monster':2,'event':3}
 
-
 class Encounter(object):
   def __init__(self, u, em=None):
     if em is None:
@@ -17,6 +17,16 @@ class Encounter(object):
       self.encounter_model.creator_id = u.get_id()
     else:
       self.encounter_model = em
+
+  @staticmethod
+  def get_encounter_by_hash(hash):
+    try:
+      em = _db.session.query(db.EncounterModel).filter(db.EncounterModel.hash_key == hash).one()
+      return Encounter(None,em)
+    except sqlalchemy.orm.exc.NoResultFound:
+      return None
+    except sqlalchemy.orm.exc.MultipleResultsFound:
+      return None
 
   @property
   def name(self):
@@ -104,8 +114,9 @@ class Encounter(object):
   def get_monsters(self):
     my_user = users.User.get_user_by_id(self.encounter_model.creator_id)
     return sorted(
-      map(lambda h: my_user.get_monster_by_id(h.reference_id),
-        filter(lambda a:a.category=='monster',self.encounter_model.actors)),
+      filter( lambda y: y is not None, 
+        map(lambda h: my_user.get_monster_by_id(h.reference_id),
+          filter(lambda a: a.category=='monster',self.encounter_model.actors))),
       key=lambda x: x.name
     )
 
@@ -264,7 +275,15 @@ class Encounter(object):
     self.current_entry = 0
     for e in self.get_encounter_entries():
       e.destroy()
+    self.encounter_model.hash_key = None
     self.save()
+
+  def _gen_hash_key(self):
+    key_values = list("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
+    return ''.join(random.sample(key_values,5))
+
+  def get_encounter_hash_key(self):
+    return self.encounter_model.hash_key
 
   def start(self, entries):
     """initializes the encounter"""
@@ -276,6 +295,9 @@ class Encounter(object):
       entries[i].initiative_order = i
       entries[i].save()
     self.current_entry = entries[0].get_id()
+    self.encounter_model.hash_key = self._gen_hash_key()
+    while Encounter.get_encounter_by_hash(self.encounter_model.hash_key) is not None:
+      self.encounter_model.hash_key = self._gen_hash_key()
     self.save()
 
 class EncounterEvent(object):
