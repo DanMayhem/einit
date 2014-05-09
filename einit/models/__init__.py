@@ -61,7 +61,33 @@ _status_map = {
     grants_combat_advantage:True,
     can_flank:False,
     can_act:False
+  },
+  'death_save_1':{
+    tag:'Death 1',
+    glyph:'glyphicon glyphicon-remove',
+    description:"1 failed saving throw",
+    grants_combat_advantage:True,
+    can_flank:False,
+    can_act:False
+  },
+  'death_save_2':{
+    tag:'Death 2',
+    glyph:'glyphicon glyphicon-remove',
+    description:"2 failed saving throws",
+    grants_combat_advantage:True,
+    can_flank:False,
+    can_act:False
+  },
+  'death_save_3':{
+    tag:'Death 3',
+    glyph:'glyphicon glyphicon-remove',
+    description:"3 failed saving throws",
+    grants_combat_advantage:True,
+    can_flank:False,
+    can_act:False
   }
+
+
 }
 
 _status_list = _status_map.keys()

@@ -427,8 +427,9 @@ class EncounterEntry(object):
     if self.temp_hp >= hp:
       self.temp_hp -= hp
     else:
-      self.temp_hp = 0
       self.hp -= (hp-self.temp_hp)
+      self.temp_hp = 0
+
     try:
       encounter = Encounter(None,
       _db.session.query(db.EncounterModel).filter(db.EncounterModel.id == self.encounter_entry.encounter_id).one())
@@ -441,6 +442,9 @@ class EncounterEntry(object):
 
     if actor and self.hp < (actor.get_max_hp()/2):
       self.set_status('bloodied')
+
+    if actor and ((self.hp + self.temp_hp) <= 0):
+      self.set_status("knocked_out")
 
   def apply_heal(self, hp):
     try:
@@ -457,6 +461,7 @@ class EncounterEntry(object):
       self.hp = actor.get_max_hp()
     else:
       self.hp += hp
+
 
   def apply_temp_hp(self, hp):
     self.temp_hp += hp
