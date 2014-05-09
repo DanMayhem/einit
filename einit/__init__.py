@@ -1,5 +1,7 @@
 import os
 import random
+import base64
+import hashlib
 
 import flask
 import flask.ext.sqlalchemy
@@ -7,10 +9,9 @@ import flask.ext.login
 import flask_bootstrap
 import flask_sslify
 import flaskext.bcrypt
+import flask_redis
 
 import Crypto.Random
-import base64
-import hashlib
 
 
 app = flask.Flask(__name__)
@@ -23,6 +24,7 @@ app.config['CSRF_ENABLED'] = True
 #load databases
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL',"sqllite://")
 #app.config['SQLALCHEMY_MIGRATE_REPO'] = os.path.join(os.path.abspath(os.path.split(os.path.dirname(__file__))[0]),'migrations')
+app.config['REDIS_URL']=os.environ.get('REDISTOGO_URL')
 db = flask.ext.sqlalchemy.SQLAlchemy(app)
 
 #load secure token
@@ -33,6 +35,7 @@ sslify = flask_sslify.SSLify(app) #requires SSL
 bcrypt = flaskext.bcrypt.Bcrypt(app) #password digests
 bootstrap = flask_bootstrap.Bootstrap(app) #make bootstrap templates and helpers available.
 login_manager = flask.ext.login.LoginManager(app) #login manager
+redis = flask_redis.Redis(app) #redis
 
 #import models, views and helpers
 import einit.views
@@ -656,6 +659,7 @@ def abandon_encounter(encounter_id):
     flask.flash("Unable to find encounter","warning")
     return flask.redirect(flask.url_for('index'))
   encounter.abandon()
+  redis.publish(encounter.get_encounter_hash_key(),'abandon')
   return flask.redirect(flask.url_for("view_encounter",encounter_id=encounter_id))
  
 @app.route("/encounter/<int:encounter_id>/manage", methods=['GET',"POST"], defaults={'active_entry_id':0})
@@ -682,6 +686,7 @@ def goto_entry(encounter_id, round, entry_id):
     flask.flash("Encounter not in progress","warning")
     return flask.redirect(flask.url_for('view_encounter',encounter_id=encounter_id))
   encounter.set_current_event(round, entry_id)
+  redis.publish(encounter.get_encounter_hash_key(),'move')
   return flask.redirect(flask.url_for('manage_encounter',encounter_id=encounter_id))
 
 @app.route("/encounter/<int:encounter_id>/manage/entry/<int:entry_id>/make_visible", methods=['GET','POST','PUT','PATCH'])
@@ -708,6 +713,7 @@ def set_visibility(encounter_id, entry_id, visibility):
     return flask.redirect(flask.url_for('manage_encounter',encounter_id=encounter_id))
   entry.visible = visibility
   entry.save()
+  redis.publish(encounter.get_encounter_hash_key(),'visibility')
   return flask.redirect(flask.url_for('manage_encounter',encounter_id=encounter_id,active_entry_id=entry_id))
 
 @app.route("/encounter/<int:encounter_id>/manage/entry/<int:entry_id>/spawn", methods=['GET','POST','PUT','PATCH'])
@@ -729,6 +735,7 @@ def spawn_monster(encounter_id, entry_id):
     return flask.redirect(flask.url_for('manage_encounter',encounter_id=encounter_id, active_entry_id=entry_id))
   monster = encounter.get_actor_by_category_id(entry.category,entry.reference_id)
   encounter.spawn_monster(monster)
+  redis.publish(encounter.get_encounter_hash_key(),'spawn')
   return flask.redirect(flask.url_for('manage_encounter',encounter_id=encounter_id, active_entry_id=entry_id))
     
 @app.route("/encounter/<int:encounter_id>/manage/entry/<int:entry_id>/modify_hp",methods=['POST','PUT','GET'])
@@ -754,6 +761,7 @@ def mod_hp(encounter_id, entry_id):
     elif hp_form.action.data=='heal':
       entry.apply_heal(hp_form.amount.data)
     entry.save()
+    redis.publish(encounter.get_encounter_hash_key(),'hp')
   else:
     for fieldname, error_list in hp_form.errors:
       for error in error_list:
@@ -784,6 +792,7 @@ def status_action(encounter_id, entry_id, status_str, status_functor):
     return flask.redirect(flask.url_for('manage_encounter',encounter_id=encounter_id))
   status_functor(entry, status_str)
   entry.save()
+  redis.publish(encounter.get_encounter_hash_key(),'status')
   return flask.redirect(flask.url_for('manage_encounter',encounter_id=encounter_id, active_entry_id=entry_id))
 
 @app.route("/observe/<string:encounter_hash_key>", methods=["GET"])
@@ -805,3 +814,13 @@ def encounter_json(encounter_hash_key):
     flask.flash("Unable to find encounter","warning")
     return flask.Response(response=flask.render_template("error_json.json"),mimetype="application/json")
   return flask.json.jsonify(views.render_encounter_as_dict(encounter))
+
+def event_stream(key):
+  pubsub = redis.pubsub()
+  pubsub.subscribe(key)
+  for message in pubsub.listen():
+    yield 'data: %s\n\n'%message['data']
+
+@app.route("/observe/<string:encounter_hash_key>/subscribe")
+def encounter_subscribe(encounter_hash_key):
+  return flask.Response(event_stream(encounter_hash_key),mimetype="text/event-stream")

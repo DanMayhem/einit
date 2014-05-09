@@ -48,3 +48,20 @@ app.encounter.fetch({
     }))
   }
 });
+
+<!--http://stackoverflow.com/questions/12232304/how-to-implement-server-push-in-flask-framework-->
+
+var source = new EventSource(get_event_source());
+source.onmessage = function(event){
+  app.encounter.fetch({
+  success: function(){
+    var entries = app.encounter.get("entries")
+    var entryCollection = new EntryCollection(entries)
+    app.encounter.set("entry_list",entryCollection)
+    app.mainRegion.reset()
+    app.mainRegion.show(new EncounterView({
+      model:app.encounter
+    }))
+  }
+});
+};
