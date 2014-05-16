@@ -85,8 +85,47 @@ _status_map = {
     grants_combat_advantage:True,
     can_flank:False,
     can_act:False
+  },
+  'immobilized':{
+    tag:'Immobilized',
+    glyph:'glyphicon glyphicon-minus-sign',
+    description:'You cannot move. (You can teleport or be pushed, pulled slid)',
+    grants_combat_advantage:False,
+    can_flank:True,
+    can_act:True
+  },
+  'deafened':{
+    tag:'Deafened',
+    glyph:'glyphicon glyphicon-volume-off',
+    description:'You cannot hear, -10 to perception checks.',
+    grants_combat_advantage:False,
+    can_flank:True,
+    can_act:True
+  },
+  'dominated':{
+    tag:'Dominated',
+    glyph:'glyphicon glyphicon-user',
+    description:'You are DAZED. The creature cominating you may force you to take a single at-will action on your turn. You may not take immediate actions or opportunity actions.'
+    grants_combat_advantage:True,
+    can_flank:False,
+    can_act:False
+  },
+  'grabbed':{
+    tag:'Grabbed',
+    glyph:'glyphicon glyphicon-bullhorn',
+    description:'You are IMMOBILIZED, You are no longer grabbed if the creature grabbing you is prevernted from taking actions.',
+    grants_combat_advantage:False,
+    can_flank:True,
+    can_act:True
+  },
+  'prone':{
+    tag:'Prone',
+    glyph:'glyphicon glyphicon-arrow-down',
+    description:'-2 to attack. Grant combat advantage to melee. +2 defense from ranged attacks.',
+    grants_combat_advantage:True,
+    can_flank:True,
+    can_act:True
   }
-
 
 }
 
