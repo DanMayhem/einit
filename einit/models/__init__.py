@@ -40,7 +40,7 @@ _status_map = {
   },
   'weakened':{
     tag:'Weakened',
-    glyph:'glyphicon glyphicon-minus-sign',
+    glyph:'glyphicon glyphicon-resize-small',
     description:"Attacks deal half damage",
     grants_combat_advantage:False,
     can_flank:True,
@@ -105,7 +105,7 @@ _status_map = {
   'dominated':{
     tag:'Dominated',
     glyph:'glyphicon glyphicon-user',
-    description:'You are DAZED. The creature cominating you may force you to take a single at-will action on your turn. You may not take immediate actions or opportunity actions.'
+    description:'You are DAZED. The creature cominating you may force you to take a single at-will action on your turn. You may not take immediate actions or opportunity actions.',
     grants_combat_advantage:True,
     can_flank:False,
     can_act:False
